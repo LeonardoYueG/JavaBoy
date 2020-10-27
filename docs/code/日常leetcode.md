@@ -1,0 +1,558 @@
+## 二分法
+
+#### [33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
+
+给你一个升序排列的整数数组 nums ，和一个整数 target 。假设按照升序排序的数组在预先未知的某个点上进行了旋转。（例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] ）。
+
+请你在数组中搜索 target ，如果数组中存在这个目标值，则返回它的索引，否则返回 -1 。
+
+示例：
+
+```html
+输入：nums = [4,5,6,7,0,1,2], target = 0
+输出：4
+
+输入：nums = [4,5,6,7,0,1,2], target = 3
+输出：-1
+```
+
+**思路**：旋转数组表示部分有序，有序就可以考虑二分法把时间复杂度变为logN，选择使用二分法，本题通过二分法找到有序区间，找到了有序区间，通过比较target与nums[left]、nums[right]找到目标区间。还需要注意边界收缩的一致性，否则无法跳出循环。
+
+**关键**：把比较好些的判断（`target` 落在有序的那部分）放在 `if` 的开头考虑，把剩下的情况放在 `else` 里面。
+
+**二分法本质**：找到目标区间，常规二分法通过nums[mid]和target比较划分目标区间，旋转区间通过nums[mid]和nums[right]比较划分目标区间。
+
+注意
+
+1.需要注意的是mid的取值
+
+- mid = left + (right - left) / 2 ，取得是左中位数；
+- mid = left + (right - left + 1) / 2 ，取得是右中位数；
+
+2.关于while循环中是否取等号
+
+- left < right：不取等号自动跳出，在循环外返回目标值
+- left <= right：取等号，需要在循环内返回，不然死循环
+
+```java
+	public int search(int[] nums, int target) {
+        if(nums.length == 0 || nums == null) return -1;
+        int left = 0;
+        int right = nums.length - 1;
+        while(left < right){
+            //使用左中位数
+            int mid = left + (right - left) / 2;
+			//int mid = left + (right - left + 1) / 2; 则使用是的右中位数
+            
+            //[mid, right]有序
+            if(nums[mid] < nums[right]){
+                //target在[mid, right]
+                //nums[mid + 1] <= target是为了让两个大的if-else中左右边界收缩一致，
+                //即在其中left = mid + 1和right = mid变化相同
+                //否则当只有两个元素时，不会取到第一个元素，始终left < right，无法跳出循环
+                if(nums[mid + 1] <= target && nums[right] >= target){
+                    left = mid + 1;
+                }else{
+                    right = mid;
+                }
+            }
+            //[left, mid]有序
+            else{
+                //target在[left, mid]
+                if(nums[left] <= target && nums[mid] >= target){
+                    right = mid;
+                }else{
+                    left = mid + 1;
+                }
+            } 
+        }
+        // if(target == nums[left]) return left;
+        // return -1;
+        return target == nums[left] ? left : -1;
+    }
+```
+
+
+
+#### [剑指 Offer 53 - I. 在排序数组中查找数字 I](https://leetcode-cn.com/problems/zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof/)
+
+统计一个数字在排序数组中出现的次数。
+
+示例：
+
+```html
+输入: nums = [5,7,7,8,8,10], target = 8
+输出: 2
+
+输入: nums = [5,7,7,8,8,10], target = 6
+输出: 0
+```
+
+思路：有序数组，就要考虑是否二分法能解决，本题使用二分法找到target左边界。1.从左边界依次计算，2.从计算target + 1左边界，如果左边界，两者相减得到数量。
+
+```java
+	//find the left rang by binarySearch
+    public static int binarySearch(int[] nums, int target){
+        int left = 0;
+        int right = nums.length - 1;
+        while(left < right){
+            int mid = left + (right - left) / 2;
+            if(nums[mid] < target){
+                left = mid + 1;
+            }else{
+                right = mid;
+            }
+        }
+        return left;
+    }
+```
+
+
+
+#### [剑指 Offer 53 - II. 0～n-1中缺失的数字](https://leetcode-cn.com/problems/que-shi-de-shu-zi-lcof/)
+
+一个长度为n-1的递增排序数组中的所有数字都是唯一的，并且每个数字都在范围0～n-1之内。在范围0～n-1内的n个数字中有且只有一个数字不在该数组中，请找出这个数字。
+
+```html
+示例：
+输入: [0,1,3]
+输出: 2
+
+输入: [0,1,2,3,4,5,6,7,9]
+输出: 8
+```
+
+思路：部分有序，二分法
+
+```java
+	public int missingNumber(int[] nums) {
+        int left = 0;
+        int right = nums.length - 1;
+        while(left <= right){
+            int mid = left + (right - left ) / 2;
+
+            if(nums[mid] == mid){
+                left = mid + 1;               
+            }
+            else{
+                right = mid - 1;
+            }
+        }
+        return left;
+    }
+```
+
+
+
+## 贪心
+
+贪心算法一般用来解决需要 “找到要做某事的最小数量” 或 “找到在某些情况下适合的最大物品数量”的问题，且提供的是无序的输入。
+
+贪心算法的思想是每一步都选择最佳解决方案，最终获得全局最佳的解决方案。
+
+### 区间调度问题
+
+有关于区间最优值的问题，通常使用到贪心算法
+
+#### [435. 无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
+
+给定一个区间的集合，找到需要移除区间的最小数量，使剩余区间互不重叠。
+
+- 可以认为区间的终点总是大于它的起点。
+- 区间 [1,2] 和 [2,3] 的边界相互“接触”，但没有相互重叠。
+
+示例：
+
+```html
+输入: [ [1,2], [2,3], [3,4], [1,3] ]
+输出: 1
+解释: 移除 [1,3] 后，剩下的区间没有重叠。
+
+输入: [ [1,2], [1,2], [1,2] ]
+输出: 2
+解释: 你需要移除两个 [1,2] 来使剩下的区间没有重叠。
+```
+
+思路：按照区间的尾坐标进行升序排列，然后从头开始遍历，`intervals[0][1] < end` 表示区间和前一个区间相交，计算最多不相交区间的个数，总数减不相交个数。
+
+![image-20201020202017985](image/image-20201020202017985.png)
+
+```java
+	public int eraseOverlapIntervals(int[][] intervals) {
+        if(intervals.length == 0){
+            return 0;
+        }
+        Arrays.sort(intervals, new Comparator<int[]>(){
+            @Override
+            public int compare(int[] a, int[] b){
+                return a[1] - b[1];
+            }
+        });
+        //先计算最多能组成的不重叠区间个数，然后用区间总个数减去不重叠区间的个数
+        int ans = 1;        
+        int end = intervals[0][1];//记录当前end节点
+        for(int i = 1; i < intervals.length; i++){
+            if(intervals[i][0] < end){//如果在当前节点里面就跳过，不要管了，已经重叠了
+                continue;
+            }
+            //不重叠，然后得到新的end节点
+            ans++;
+            end = intervals[i][1];
+        }
+        return intervals.length - ans;
+    }
+```
+
+
+
+#### [452. 用最少数量的箭引爆气球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
+
+在二维空间中有许多球形的气球。对于每个气球，提供的输入是水平方向上，气球直径的开始和结束坐标。由于它是水平的，所以y坐标并不重要，因此只要知道开始和结束的x坐标就足够了。开始坐标总是小于结束坐标。平面内最多存在104个气球。
+
+示例：
+
+```html
+输入:[[10,16], [2,8], [1,6], [7,12]]
+输出:2
+解释:对于该样例，我们可以在x = 6（射爆[2,8],[1,6]两个气球）和 x = 11（射爆另外两个气球）。
+```
+
+思路：贪心思想，先排序，然后从头开始遍历，每次都让一只箭射爆最多的气球（当前end坐标与第i个气球的start坐标比较）
+
+```java
+public int findMinArrowShots(int[][] points) {
+        //下面这个思路可做但是很麻烦，没有使用排序，要考虑前后两个坐标，排序后只需要考虑一个就行
+
+        //从第一个区间射一支箭，然后依次找和第一个区间相交的区间，两个区间相交区间就是射箭区间，
+        //再往后找直至没有，然后射第二支箭
+        //用一个数组表示当前为位置气球爆没爆
+    
+    	// //当前气球的开始和结束
+        // int xStart, xEnd = points[0][1];
+        // //当前结束
+        // int firstEnd = points[0][1];
+        // for(int[] point: points){
+        //     xStart = point[0];
+        //     xEnd = point[1];
+        //     if(xStart > firstEnd){
+        //         arrows++;
+        //         firstEnd = xEnd;
+        //     }
+        // }
+       
+        if (points.length == 0) return 0;
+        Arrays.sort(points, new Comparator<int[]>(){
+            @Override
+            public int compare(int[] a, int[] b){
+                return a[1]- b[1];
+            }
+        });
+        int arrows = 1;
+        int end = points[0][1];
+        for(int i = 1; i < points.length; i++){
+            if(points[i][0] <= end){
+                continue;
+            }
+            arrows++;
+            end = points[i][1];
+        }
+        return arrows;
+    }
+```
+
+
+
+#### [56. 合并区间](https://leetcode-cn.com/problems/merge-intervals/)
+
+给出一个区间的集合，请合并所有重叠的区间。
+
+示例：
+
+```html
+输入: intervals = [[1,3],[2,6],[8,10],[15,18]]
+输出: [[1,6],[8,10],[15,18]]
+解释: 区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+
+输入: intervals = [[1,4],[4,5]]
+输出: [[1,5]]
+解释: 区间 [1,4] 和 [4,5] 可被视为重叠区间。
+```
+
+思路：用的是start坐标去排序区间，因为我们要用的是start+end构成新的区间。
+
+```java
+	public int[][] merge(int[][] intervals) {
+        if(intervals.length < 1){
+            return intervals;
+        }
+        Arrays.sort(intervals, new Comparator<int[]>(){
+            @Override
+            public int compare(int[] o1, int[] o2){
+                return o1[0] - o2[0];
+            }
+        });
+        List<int[]> list = new ArrayList<>();
+        int start = intervals[0][0];
+        int end = intervals[0][1];
+        for(int i = 1; i < intervals.length; i++){
+            //需要intervals[i][1] >= end，不然[1, 4] [2, 3]会输出[1, 3的情况]
+            if(intervals[i][0] <= end && intervals[i][1] >= end){
+                end = intervals[i][1];
+            }
+            //不能直接用else,会出现[1, 4] [2, 3]输出为[1, 4] [2, 3]
+            else if(intervals[i][0] > end){
+                list.add(new int[]{start, end});
+                start = intervals[i][0];
+                end = intervals[i][1];
+            }
+        }
+        list.add(new int[]{start, end});
+		
+        //转换为int[][]结构
+        int[][] res = new int[list.size()][2];
+        for(int i = 0; i < list.size(); i++){
+            res[i][0] = list.get(i)[0];
+            res[i][1] = list.get(i)[1];
+        }
+        return res;
+    }
+```
+
+### 动态规划
+
+将暴力计算的方法抛弃，使用空间替代时间的思想，避免重复计算，从而降低时间复杂度。
+
+#### [338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)
+
+给定一个非负整数 num。对于 0 ≤ i ≤ num 范围中的每个数字 i ，计算其二进制数中的 1 的数目并将它们作为数组返回。
+
+示例
+
+```html
+输入: 2
+输出: [0,1,1]
+
+输入: 5
+输出: [0,1,1,2,1,2]
+```
+
+**思路：**
+
+1. 动态规划：二进制不同的数可以通过二进制进行关联, eg: 3 (110) 和 7 (1110)二进制仅增加一位1，而两者的十进制也可以相互联系， 避免计算每一个数的每一位二进制位。
+
+2. 规律方法：所有数字分为两类：奇数和偶数
+
+   奇数：二进制表示中，奇数一定比前面那个偶数多一个 1，因为多的就是最低位的 1；
+
+   偶数：二进制表示中，偶数中 1 的个数一定和除以 2 之后的那个数一样多。因为最低位是 0，除以 2 就是右移一位，也就是把那个 0 抹掉而已，所以 1 的个数是不变的。
+
+   ```html
+   0 = 0   1 = 1
+   2 = 10  3 = 11
+   
+   2 = 10  4 = 100
+   3 = 11  6 = 110
+   ```
+
+   
+
+```java
+	public int[] countBits(int num){
+        //dp[i]表示第i数的二进制一共多少位
+        int[] dp = new int[num + 1];
+        int i = 0;
+        dp[0] = 0;
+        int b = 1;
+        while(b <= num){
+            // P(x+b)=P(x)+1, (b = 2^m, b > x)
+            //每次以b = 2^m 为界，让 x++,从小的一直计算最大的，x不超过b
+            //eg: b = 4, dp[0, 3]生成dp[4, 7]
+            //	  b = 8, dp[0, 7]生成dp[8, 15]
+            while(x + b <= num && x < b){
+                dp[x + b] = dp[x] + 1;
+                x++;
+            }
+            x = 0;
+            b <<= 1;
+        }
+        return dp;
+    }
+
+	//规律方法：
+	public int[] countBits(int num){
+        int[] res = new int[num + 1];
+        res[0] = 0;
+        for(int i = 1; i <= num; i++){
+            if(i / 2 == 0) res[i] = res[i/2];
+            else res[i] = res[i-1] + 1;
+        }
+        return res;
+    }
+        
+
+```
+
+
+
+
+
+## 数组问题
+
+
+
+
+
+## 双指针
+
+#### [11. 盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
+
+给你 n 个非负整数 a1，a2，...，an，每个数代表坐标中的一个点 (i, ai) 。在坐标内画 n 条垂直线，垂直线 i 的两个端点分别为 (i, ai) 和 (i, 0)。找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
+
+说明：你不能倾斜容器，且 n 的值至少为 2。
+
+<img src="image/question_11.jpg" alt="img" style="zoom:50%;" />
+
+示例：
+
+```html
+输入：[1,8,6,2,5,4,8,3,7]
+输出：49
+```
+
+**思路**：双指针，每次移动两个板中的短板不会影响最大值的获取,所以移动每次短板。如果相等随便移动那一个没有影响，因为我们取容量的时候只和两个之间最小值相关，和后面那个高无关。
+
+```java
+	public int maxArea(int[] height) {
+        if(height == null || height.length < 2){
+            return 0;
+        }
+        int left = 0;
+        int right = height.length - 1;
+        int maxCap = 0;
+        while(left < right){
+            int tmpCap = Math.min(height[left], height[right]) * (right - left);
+            maxCap = Math.max(maxCap, tmpCap);
+            if(height[left] < height[right]){
+                left++;
+            }else{
+                right--;
+            }
+            // maxCap = Math.max(maxCap, 
+            //                   height[left] < height[right] ? 
+            //                   (right - left) * height[left++] : (right - left) * height[right--]
+            //                   );
+
+        }
+        return maxCap;
+
+    }
+```
+
+
+
+## 字符串
+
+#### [49. 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
+
+给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
+
+示例：
+
+```html
+输入: ["eat", "tea", "tan", "ate", "nat", "bat"]
+输出:
+[
+  ["ate","eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+```
+
+思路：
+
+如果采用两两比较，则需要每次都计算异位字符串，所以考虑使用HashMap存相同类型的字符串的Key，Value为异位字符串的集合，HashMap<String, List< String >>。
+
+具体解法：对每一个字符串进行排序，方便判断是否是同一个字符串，然后添加到map中。
+
+```java
+	public List<List<String>> groupAnagrams(String[] strs) {
+        HashMap<String, List<String>> map = new HashMap<>();
+        for(int i = 0; i < strs.length; i++){
+            char[] str_arr = strs[i].toCharArray();
+            //字符串排序
+            Arrays.sort(str_arr);
+            //得到字符串的Key值
+            String keyStr = String.valueOf(str_arr);
+            //toString()是Object的方法，char[]是对象但是没有重写toString()方法
+            // String keyStr = str_arr.toString();
+            //插入map中
+            if(map.containsKey(keyStr)){
+                map.get(keyStr).add(strs[i]);
+            }else{
+                List<String> tmp = new ArrayList<>();
+                tmp.add(strs[i]);
+                map.put(keyStr, tmp);
+            }
+        }
+        return new ArrayList<List<String>>(map.values());
+    }
+```
+
+
+
+## 递归
+
+#### [79. 单词搜索](https://leetcode-cn.com/problems/word-search/)
+
+给定一个二维网格和一个单词，找出该单词是否存在于网格中。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+示例：
+
+```java
+board =
+[
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
+]
+
+给定 word = "ABCCED", 返回 true
+给定 word = "SEE", 返回 true
+给定 word = "ABCB", 返回 false
+
+```
+
+思路：
+
+对每一个位置进行深度遍历，遍历的时候加上回溯并同时剪枝
+
+```java
+	public boolean exist(char[][] board, String word) {
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board[0].length; j++){
+                if(search(board, i , j, word.toCharArray(), 0)) return true;
+            }
+        }
+        return false;
+    }
+    public boolean search(char[][] board, int i, int j, char[] word, int index){
+        //board[i][j] != word[index] 要放在后面，不然边界出错，如果在遍历的时候就判断i,j是否合法有一定性能提升，但是写着不好看
+        if( i >= board.length || i < 0 || j >= board[0].length || j < 0 || board[i][j] != word[index]){
+            return false;
+        }
+        if(index == word.length - 1){
+            return true;
+        }
+
+        char tmp = board[i][j];
+        board[i][j] = '#';
+        if(search(board, i - 1, j, word, index + 1) || search(board, i + 1, j, word, index + 1) || search(board, i , j - 1, word, index + 1) || search(board, i , j + 1, word, index + 1)){
+            return true;
+        }
+        board[i][j] = tmp;
+        return false;
+    }
+```
+
