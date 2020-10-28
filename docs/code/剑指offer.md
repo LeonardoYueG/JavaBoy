@@ -1451,13 +1451,23 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 
 思路：
 
-相邻节点比较：后续遍历，会出现相邻的三个节点 a[i] < a[i+2]  && a[i+2]  <  a[i+1] (**本方法是错误**，因为太难缺点相邻节点之间的关系了)
+- 相邻节点比较：后续遍历，会出现相邻的三个节点 a[i] < a[i+2]  && a[i+2]  <  a[i+1] (**本方法是错误**，因为太难缺点相邻节点之间的关系了)
+- 递归分治：根据二叉搜索树的定义，可以通过递归，判断所有子树的 正确性 （即其后序遍历是否满足二叉搜索树的定义：根（当前最后节点）大于当前节点左孩子，小于当前节点右孩子） ，若所有子树都正确，则此序列为二叉搜索树的后序遍历。
+- **单调栈：**后续遍历倒序（根，右，左），搜索二叉树（左 < 根 < 右）
 
-递归分治：根据二叉搜索树的定义，可以通过递归，判断所有子树的 正确性 （即其后序遍历是否满足二叉搜索树的定义：根（当前最后节点）大于当前节点左孩子，小于当前节点右孩子） ，若所有子树都正确，则此序列为二叉搜索树的后序遍历。
-
-**单调栈：**
+![image-20201028224831034](image/image-20201028224831034.png)
 
 ```java
+	//单调栈
+
+
+	
+
+
+	
+
+
+	//递归分治
 	public boolean verifyPostorder(int[] postorder) {
         return rec(postorder, 0, postorder.length - 1);
     }
@@ -1479,6 +1489,243 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
         return p == right && rec(postorder, left, m-1) && rec(postorder, m, right - 1);
     }
 ```
+
+
+
+#### [剑指 Offer 34. 二叉树中和为某一值的路径](https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)
+
+输入一棵二叉树和一个整数，打印出二叉树中节点值的和为输入整数的所有路径。从树的根节点开始往下一直到叶节点所经过的节点形成一条路径。
+
+示例：
+
+```html
+给定如下二叉树，以及目标和 sum = 22，
+
+              5
+             / \
+            4   8
+           /   / \
+          11  13  4
+         /  \    / \
+        7    2  5   1
+返回:
+
+[
+   [5,4,11,2],
+   [5,8,4,5]
+]
+```
+
+思路：
+
+对每一个节点进行dfs搜索，其中使用回溯和剪枝
+
+```java
+	public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        List<List<Integer>> res = new ArrayList<>();
+        if(root == null){
+            return res;
+        }
+        List<Integer> tmp = new ArrayList<>();
+        dfs(root, sum, res, tmp, 0);
+        
+        return res;
+    }
+    
+    public static void dfs(TreeNode root, int sum, List<List<Integer>> res, List<Integer> tmp, int count){
+        
+        tmp.add(root.val);
+        count += root.val;
+        //考虑sum为负数的情况， 
+        //可能树上有正数有负数，不能用大于判断，必须全部遍历
+        // if(Math.abs(count) > Math.abs(sum)){
+        //     return;
+        // }
+        if(count == sum && root.left == null && root.right == null){
+            res.add(new ArrayList<>(tmp));
+        }
+        
+        //这儿需要是新建tmp,不然始终调用的是那个一个tmp;
+        //用回溯的话，不用新建tmp，时间短一些
+        if(root.left != null){
+            //dfs(root.left, sum, res, new ArrayList<>(tmp),count);
+            dfs(root.left, sum, res, tmp,count);
+        }
+        if(root.right != null){
+            //dfs(root.right, sum, res, new ArrayList<>(tmp),count);
+            dfs(root.right, sum, res, tmp,count);
+        }
+
+        tmp.remove(tmp.size() - 1);
+
+
+    }
+```
+
+
+
+#### [剑指 Offer 35. 复杂链表的复制](https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/)
+
+请实现 copyRandomList 函数，复制一个复杂链表。在复杂链表中，每个节点除了有一个 next 指针指向下一个节点，还有一个 random 指针指向链表中的任意节点或者 null。
+
+示例：
+
+![image-20201028225844540](image/image-20201028225844540.png)
+
+思路：
+
+问题的核心：如果找到复制后的节点，把他们链接起来。
+
+- hashmap：将原节点和复制节点视为<key, value>，通过key，查找value
+- 插入法：将复制后的节点放在原节点之后，这样就可以通过原节点找到复制后的节点
+
+```java
+	public Node copyRandomList(Node head) {        
+        if(head == null){
+            return head;
+        }
+        HashMap<Node, Node> map = new HashMap<Node, Node>();
+        Node tmp = head;
+        while(tmp != null){
+            Node copy = new Node(tmp.val);
+            map.put(tmp, copy);
+            tmp = tmp.next;
+        }
+
+        tmp = head;
+        //不用想着在新建一个节点，然后返回新的节点，因为直接可以根据map获取新的节点
+        //一定要切记
+//        Node newHead = new Node(0);
+//        Node copy  = new Node(0);
+//        newHead.next = copy;
+        while(tmp != null){
+            Node copy = map.get(tmp);
+            copy.next = map.get(tmp.next);
+            copy.random = map.get(tmp.random);
+            tmp = tmp.next;
+            copy = copy.next;
+        }
+        return map.get(head);
+
+        
+    }
+```
+
+
+
+#### [剑指 Offer 36. 二叉搜索树与双向链表](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/)
+
+输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
+
+示例：
+
+```html
+     5
+    / \
+   2   6
+  / \
+ 1   3
+输出：1—>2—>3—>5—>6(双向)
+```
+
+思路：
+
+使用中序遍历，将前驱pre节点和当前节点进行连接
+
+```java
+	Node pre, head;
+    public Node treeToDoublyList(Node root) {
+        if(root == null) return null;
+        dfs(root);
+        //connect head and last
+        head.left = pre;
+        pre.right = head;
+
+        return head;
+    }
+    void dfs(Node cur) {
+        if(cur == null) return;
+        
+        dfs(cur.left);//deal the left child
+        
+        if(pre == null) head = cur;// find the head node
+        
+        //connect pre and cur
+        else pre.right = cur;
+        cur.left = pre;
+        pre = cur;
+
+        dfs(cur.right);
+    }
+```
+
+
+
+#### [剑指 Offer 37. 序列化二叉树](https://leetcode-cn.com/problems/xu-lie-hua-er-cha-shu-lcof/)
+
+请实现两个函数，分别用来序列化和反序列化二叉树。
+
+思路：
+
+按照一定规则进行序列化，然后按照相同规则进行反序列化。#表示空位置，!用于分割
+
+```java
+    public String serialize(TreeNode root) {
+        if(root == null){
+            return "#!";
+        }
+        String str = String.valueOf(root.val) + '!';
+        str += serialize(root.left);
+        str += serialize(root.right);
+        return str;
+        
+    }
+
+    public TreeNode deserialize(String data) {
+        if(data.length() == 0){
+            return new TreeNode();
+        }
+        //用string好一点
+        String[] strArr = data.split("!");
+        //用Queue好运算和使用，如果直接用String[]，你不好找后面的数据
+        Queue<String> queue = new LinkedList<>();
+        for(int i = 0; i < strArr.length; i++){
+            queue.offer(strArr[i]);
+        }
+        return rec(queue);
+
+
+    }
+    public static TreeNode rec(Queue<String> queue){
+        String value = queue.poll();
+        if(value.equals("#")){
+            return null;
+        }
+        TreeNode head = new TreeNode(Integer.valueOf(value));
+        //之所以这么写是因为，如何序列化的就如何反序化
+        //为什么都是处理一个queue呢？因为我们开始序列化的时候也是这样的，先序后面的数据是左边存完，再存右边的，所以我们也先处理左边，再处理右边即可
+        head.left = rec(queue);
+        head.right = rec(queue);
+        return head;
+    }
+```
+
+
+
+#### [剑指 Offer 38. 字符串的排列](https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
+
+输入一个字符串，打印出该字符串中字符的所有排列。
+
+你可以以任意顺序返回这个字符串数组，但里面不能有重复元素。
+
+示例：
+
+```html
+输入：s = "abc"
+输出：["abc","acb","bac","bca","cab","cba"]
+```
+
+
 
 
 
