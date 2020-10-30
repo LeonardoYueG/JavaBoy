@@ -1364,7 +1364,7 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 
 
 
-#### [剑指 Offer 32 - III. 从上到下打印二叉树 III](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof/)
+#### [32 - III. 从上到下打印二叉树 III](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof/)
 
 请实现一个函数按照之字形顺序打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右到左的顺序打印，第三行再按照从左到右的顺序打印，其他行以此类推。
 
@@ -1431,7 +1431,7 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 
 
 
-#### [剑指 Offer 33. 二叉搜索树的后序遍历序列](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/)
+#### [33. 二叉搜索树的后序遍历序列](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/)
 
 输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历结果。如果是则返回 `true`，否则返回 `false`。假设输入的数组的任意两个数字都互不相同。
 
@@ -1492,7 +1492,7 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 
 
 
-#### [剑指 Offer 34. 二叉树中和为某一值的路径](https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)
+#### [34. 二叉树中和为某一值的路径](https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)
 
 输入一棵二叉树和一个整数，打印出二叉树中节点值的和为输入整数的所有路径。从树的根节点开始往下一直到叶节点所经过的节点形成一条路径。
 
@@ -1564,7 +1564,7 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 
 
 
-#### [剑指 Offer 35. 复杂链表的复制](https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/)
+#### [35. 复杂链表的复制](https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/)
 
 请实现 copyRandomList 函数，复制一个复杂链表。在复杂链表中，每个节点除了有一个 next 指针指向下一个节点，还有一个 random 指针指向链表中的任意节点或者 null。
 
@@ -1613,7 +1613,7 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 
 
 
-#### [剑指 Offer 36. 二叉搜索树与双向链表](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/)
+#### [36. 二叉搜索树与双向链表](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/)
 
 输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
 
@@ -1661,7 +1661,7 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 
 
 
-#### [剑指 Offer 37. 序列化二叉树](https://leetcode-cn.com/problems/xu-lie-hua-er-cha-shu-lcof/)
+#### [37. 序列化二叉树](https://leetcode-cn.com/problems/xu-lie-hua-er-cha-shu-lcof/)
 
 请实现两个函数，分别用来序列化和反序列化二叉树。
 
@@ -1712,7 +1712,7 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 
 
 
-#### [剑指 Offer 38. 字符串的排列](https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
+#### [38. 字符串的排列](https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
 
 输入一个字符串，打印出该字符串中字符的所有排列。
 
@@ -1725,9 +1725,293 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 输出：["abc","acb","bac","bca","cab","cba"]
 ```
 
+思路：
+
+全排列（dfs + 回溯） + 去重
+
+去重的思路：
+
+- 使用额外的Hashset判断是否重复
+- 直接使用Hashset存储
+
+
+```java
+	HashSet<String> set = new HashSet<>();
+    public String[] permutation(String s) {
+        if(s.length() == 0){
+            return new String[]{};
+        }
+        // List<String> res = new ArrayList<String>();
+        boolean[] used = new boolean[s.length()];
+        String tmp = new String();
+        int deep = 0;
+        
+        dfs(s, used, tmp, deep);
+        return set.toArray(new String[set.size()]);
+        // dfs(s, used, res, tmp, deep);
+        // return (String[])res.toArray(new String[res.size()]);
+
+    }
+    public void dfs(String s, boolean[] used, String tmp, int deep){
+    // public void dfs(String s, boolean[] used, List<String> res, String tmp, int deep){
+        if(deep == s.length()){
+            String str = new String(tmp);
+            set.add(str);     
+            // if(!set.contains(str)){
+            //     res.add(str);
+            //     set.add(str);
+            // }
+            return;
+        }
+        for(int i = 0; i < s.length(); i++){
+            if(!used[i]){
+                
+                used[i] = true;
+                // dfs(s, used, res, tmp + s.charAt(i), deep + 1);
+                dfs(s, used, tmp + s.charAt(i), deep + 1);
+                used[i] = false;
+            }
+        }
+    }
+```
 
 
 
+#### [39. 数组中出现次数超过一半的数字](https://leetcode-cn.com/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof/)
+
+数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。
+
+可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+**示例 1:**
+
+```html
+输入: [1, 2, 3, 2, 2, 2, 5, 4, 2]
+输出: 2
+```
+
+思路：
+
+- 快排：出现超过一半数字，那么如果数组有序或者部分有序，nums[lengt h / 2]一定是这个数
+- 投票法：目标数和当前数相同则票数加一，不同则减一，票数为0时，修改目标数，最后剩下一定是该数。
+
+```java
+	// //投票的方法也很秀
+    // public int majorityElement(int[] nums) {
+    //     int votes = 0;
+    //     int x = nums[0];
+    //     for(int num : nums){
+    //         if(votes == 0){
+    //             x = num;
+    //         }
+    //         votes += (x == num) ? 1 :-1;
+    //     }
+    //     int count = 0;
+    //     // 验证 x 是否为众数
+    //     for(int num : nums)
+    //         if(num == x) count++;
+    //     return count > nums.length / 2 ? x : 0; // 当无众数时返回 0
+
+
+    // }
+        
+
+
+    //快排就好了，因为找的是出现超过一半的，如果存在数组中出现次数超过一半的数字, 那么k = nums.length / 2;一定是整个数，奇偶都是这样
+    public int majorityElement(int[] nums) {
+        //规范一点都这么写
+        //这儿实际上是求k大的数
+        int left = 0;
+        int right = nums.length - 1;
+        int k = nums.length / 2;
+        while(left < right){
+            int mid = partition(nums, left, right);
+            if (mid < k){
+                left = mid + 1;
+            }else if (mid > k){
+                right = mid - 1;
+            }else{
+                return nums[k];
+            }
+        }
+        return nums[k];
+        
+    }
+
+    public static int partition(int[] nums, int left, int right){
+        int i = left;
+        int j = right;
+        int value = nums[left];
+        while(i < j){
+            while(nums[j] >= value && i < j) j--;
+            while(nums[i] <= value && i < j) i++;
+
+            if(i < j){
+                swap(nums, i, j);
+            }
+        }
+        swap(nums, i, left);
+        return i;
+    }
+    
+    public static void swap(int[] nums, int a, int b){
+        int tmp = nums[a];
+        nums[a] = nums[b];
+        nums[b] = tmp;
+        
+    }
+```
+
+
+
+#### [40. 最小的k个数](https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/)
+
+输入整数数组 arr ，找出其中最小的 k 个数。例如，输入4、5、1、6、2、7、3、8这8个数字，则最小的4个数字是1、2、3、4。
+
+**示例 1：**
+
+```html
+输入：arr = [3,2,1], k = 2
+输出：[1,2] 或者 [2,1]
+```
+
+思路：
+
+TopK的问题。
+
+- 快排：趋于线性的复杂度O(N)
+- 堆：使用大根堆/小根堆对数据排序，K为堆的大小，这样得到TopK，时间复杂度Nlogk
+
+```java
+    public int[] getLeastNumbers(int[] arr, int k) {
+        int left = 0;
+        int right = arr.length - 1;
+        while(left < right){
+            int mid = partition(arr, left, right);
+            if(mid == k){
+                break;
+            }else if(mid > k){
+                right = mid - 1; 
+            }else{
+                left = mid + 1;
+            }
+        }
+        int[] res = new int[k];
+        for(int  i = 0; i < k; i++){
+            res[i] = arr[i];
+        }
+        return res;
+
+
+    }
+    public static int partition(int[] arr, int left, int right){
+        int i= left;
+        int j =right;
+        int value = arr[left];
+        while(i < j){
+            while(arr[j] >= value && i < j)j--;
+            while(arr[i] <= value && i < j)i++;
+            if(i < j){
+                swap(arr, i, j);
+            }
+        }
+        swap(arr, i, left);
+        return i;
+    }
+    public static void swap(int[] arr, int a, int b){
+        int tmp = arr[a];
+        arr[a] = arr[b];
+        arr[b] = tmp;
+    }
+```
+
+
+
+#### [41. 数据流中的中位数](https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof/)
+
+如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
+
+示例：
+
+```html
+[2,3,4] 的中位数是 3
+[2,3] 的中位数是 (2 + 3) / 2 = 2.5
+```
+
+思路：
+
+将数据插入到一个有序列表中，然后去查询中位数。
+
+为了优化有序列表和中位数查询，使用堆结构构成有序列表，同时为了减少查询的时间复杂度，使用两个堆（小根堆存较大部分，大根堆存较小部分），两个堆形成一个有序集合
+
+细节：总个数为奇数时，小根堆多存一个。
+
+插入：
+
+![image-20201029164851988](image/image-20201029164851988.png)
+
+```java
+    Queue<Integer> smallQueue;
+    Queue<Integer> bigQueue;
+
+    /** initialize your data structure here. */
+    public MedianFinder() {
+        this.smallQueue = new PriorityQueue<Integer>();
+        this.bigQueue = new PriorityQueue<Integer>((x, y) -> (y - x));
+    }
+    
+    public void addNum(int num) {
+        if(smallQueue.size() == bigQueue.size()){
+            bigQueue.add(num);
+            smallQueue.add(bigQueue.poll());
+        }else{
+            smallQueue.add(num);
+            bigQueue.add(smallQueue.poll());
+        }
+
+    }
+    
+    public double findMedian() {
+        //注意相等时需要除2.0，不然会舍弃小数
+        return smallQueue.size() == bigQueue.size() ? (smallQueue.peek() + bigQueue.peek()) / 2.0 : smallQueue.peek();
+    }
+```
+
+
+
+#### [42. 连续子数组的最大和](https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/)
+
+输入一个整型数组，数组中的一个或连续多个整数组成一个子数组。求所有子数组的和的最大值。
+
+要求时间复杂度为O(n)。
+
+示例:
+
+```html
+输入: nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出: 6
+解释: 连续子数组 [4,-1,2,1] 的和最大，为 6。
+```
+
+思路：
+
+- 暴力：计算每一个i~j区间的和
+- DP：计算当前序列下之和，不一定是最大值，但是确定当前序列下连续子序列之和，更新公式：max(当前子序列, 当前位置)，因为当前位置都大于当前子序列说明当前值比前方序列一定大
+
+```java
+	public int maxSubArray(int[] nums) {
+        //dp表示i个位置最大连续子数组之和 dp[i] = Math.max(dp[i-1] + nums[i], nums[i]);
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        int max = dp[0];
+        for(int i = 1; i < nums.length; i++){
+            dp[i] = Math.max(dp[i-1] + nums[i], nums[i]);
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+
+    }
+```
 
 
 
@@ -1761,6 +2045,115 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
         return res;
     }
 ```
+
+
+
+#### [剑指 Offer 44. 数字序列中某一位的数字](https://leetcode-cn.com/problems/shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof/)
+
+数字以0123456789101112131415…的格式序列化到一个字符序列中。在这个序列中，第5位（从下标0开始计数）是5，第13位是1，第19位是4，等等。
+
+请写一个函数，求任意第n位对应的数字。
+
+示例 ：
+
+```html
+输入：n = 3
+输出：3
+```
+
+```java
+    public int findNthDigit(int n) {
+        int digit = 1;
+        long start = 1;
+        long count = 9;
+        while (n > count) { // 1.
+            n -= count;
+            digit += 1;
+            start *= 10;
+            count = digit * start * 9;
+        }
+        long num = start + (n - 1) / digit; // 2.
+        return Long.toString(num).charAt((n - 1) % digit) - '0'; // 3.
+    }
+```
+
+
+
+#### [45. 把数组排成最小的数](https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/)
+
+输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
+
+示例 :
+
+```html
+输入: [10,2]
+输出: "102"
+
+输入: [3,30,34,5,9]
+输出: "3033459"
+```
+
+思路：
+
+本质是一个排序问题，但是我们比较的是(str[i] + str[j]) 与(str[j] + str[i])进行比较，所以将数字转化为字符串然后排序，最后拼接即可。
+
+排序：
+
+- 使用Arrays.sort()进行字典序排序
+- 自定义快排，要快一点，但是无伤大雅
+
+```java
+	public String minNumber(int[] nums) {
+        //本质是一个排序问题
+        //让(str[i] + str[j]) 与(str[j] + str[i])进行比较，如果(str[i] + str[j]) 大，说明str[i]大
+        //只不过我们这儿用的是快排而已
+
+        //方案一，使用Arrays.sort()进行排序
+        //方案二，使用自定义快排
+        //但是记住本质是(str1+str2) 与 （str2+str1）的大小比较
+
+        int len = nums.length;
+        String[] strs = new String[len];
+        for(int i = 0; i < len; i++){
+            strs[i] = String.valueOf(nums[i]);
+        }
+        //quickSort(strs, 0, len-1);
+        Arrays.sort(strs, (x,y) -> (x+y).compareTo(y+x));  //这样也是可以的，只是我们使用了内置的函数儿
+        StringBuilder res = new StringBuilder();
+        for(String str : strs){
+            res.append(str);
+        }
+        return res.toString();
+
+    }
+    public static void quickSort(String[] str, int left, int right){
+        if(left >= right){
+            return;
+        }
+        int i = left;
+        int j = right;
+        String value = str[left];
+        while(i < j){
+            //注意这儿compareTo()的用法
+            while(i < j && (str[j] + value).compareTo(value + str[j]) >= 0) j--;
+            while(i < j && (str[i] + value).compareTo(value + str[i]) <= 0) i++;
+
+            String tmp = str[i];
+            str[i] = str[j];
+            str[j] = tmp;
+        }
+        String tmp = str[left];
+        str[left] = str[i];
+        str[i] = tmp;
+        //递归
+        quickSort(str, left, i-1);
+        quickSort(str, i+1, right);
+    }
+```
+
+
+
+
 
 
 

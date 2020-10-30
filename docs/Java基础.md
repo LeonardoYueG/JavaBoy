@@ -87,3 +87,21 @@ transient 关键字的作用是：阻止实例中那些用此关键字修饰的�
 
 
 
+2.11 toArray()的用法注意点
+
+List、Set、Queue都可以使用toArray()转为array。
+
+```java
+set.toArray(new String[set.size()])
+list.toArray(new String[set.size()])
+queue.toArray(new String[set.size()])
+```
+
+需要注意的地方是这些集合里面存都应该是对象，而基础类型不能直接转换。
+
+```java
+set.toArray(new int[set.size()])
+```
+
+以上则不对。
+
