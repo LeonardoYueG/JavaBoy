@@ -2048,7 +2048,7 @@ TopK的问题。
 
 
 
-#### [剑指 Offer 44. 数字序列中某一位的数字](https://leetcode-cn.com/problems/shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof/)
+#### [44. 数字序列中某一位的数字](https://leetcode-cn.com/problems/shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof/)
 
 数字以0123456789101112131415…的格式序列化到一个字符序列中。在这个序列中，第5位（从下标0开始计数）是5，第13位是1，第19位是4，等等。
 
@@ -2153,7 +2153,150 @@ TopK的问题。
 
 
 
+#### [46. 把数字翻译成字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
 
+给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
+
+示例：
+
+```html
+输入: 12258
+输出: 5
+解释: 12258有5种不同的翻译，分别是"bccfi", "bwfi", "bczi", "mcfi"和"mzi"
+```
+
+思路：
+
+- **暴力回溯**：对每一个位置分别进行回溯
+- **动态规划**：可以将大问题拆分为小问题，因为翻译的数字最大不超过25，所以只考虑相邻两位即可。
+
+<img src="image/e231fde16304948251633cfc65d04396f117239ea2d13896b1d2678de9067b42-Picture1.png" alt="Picture1.png" align=center style="zoom: 50%;"/>
+
+
+
+```java
+	public int translateNum(int num) {
+        String str = String.valueOf(num);
+        // dp[i]到前i位置为止一共有多少中翻译方法，不是截至第i个位置是因为无法通过dp[i]求dp[i]
+        // 状态转移方程：dp[i] = (num[i-2] + num[i-1])是否构成数字 ？ dp[i-2] + dp[i-1] ： dp[i-1]
+        // i-2为0则不能翻译为数字 eg: 02 01 09, 所以9 < num(i-2)num(i-1) < 26
+        
+        // int[] dp = new int[str.length() + 1];
+        // dp[0] = 1;
+        // dp[1] = 1;
+        int num_i_2 = 1;
+        int num_i_1 = 1;
+        int cur = 1;
+        for(int i = 2; i <= str.length(); i++){
+            int tmp = Integer.valueOf(str.substring(i-2, i));
+            cur = (tmp > 9 && tmp < 26) ? num_i_2 + num_i_1 : num_i_1;
+            num_i_2 = num_i_1;
+            num_i_1 = cur;
+        }
+        // return dp[str.length()];
+        return cur;
+    }
+```
+
+还可以省去dp[]的存储空间，因为每个状态只和前两个位置相关。
+
+还可以省去str的存储空间，通过将num取余操作每次都到i-2和i-1的位置。
+
+
+
+#### [47. 礼物的最大价值](https://leetcode-cn.com/problems/li-wu-de-zui-da-jie-zhi-lcof/)
+
+在一个 m*n 的棋盘的每一格都放有一个礼物，每个礼物都有一定的价值（价值大于 0）。你可以从棋盘的左上角开始拿格子里的礼物，并每次向右或者向下移动一格、直到到达棋盘的右下角。给定一个棋盘及其上面的礼物的价值，请计算你最多能拿到多少价值的礼物？
+
+示例：
+
+```html
+输入: 
+[
+  [1,3,1],
+  [1,5,1],
+  [4,2,1]
+]
+输出: 12
+解释: 路径 1→3→5→2→1 可以拿到最多价值的礼物
+```
+
+思路：
+
+动态规划：每次找到当前位置最大值，可以通过把初始化放到最终大循环里面进行优化
+
+```java
+	public int maxValue(int[][] grid) {
+        int rows = grid.length;
+        int clows = grid[0].length; 
+        int[][] dp = new int[rows][clows];
+        // //inital
+        // dp[0][0] = grid[0][0];
+        // for(int i = 1; i < clows; i++){
+        //     dp[0][i] = dp[0][i-1] + grid[0][i];
+        // }
+        // //inital
+        // for(int i = 1; i < rows; i++){
+        //     dp[i][0] = dp[i-1][0] + grid[i][0];
+        // }
+
+        // for(int i = 1; i < rows; i++){
+        //     for(int j = 1; j < clows; j++){
+        //         dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]) + grid[i][j];
+        //     }
+        // }
+        //把上面的操作放到同一个两层循环里面
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < clows; j++){
+                if(i == 0 && j == 0) dp[i][j] = grid[i][j];
+                else if(i == 0) dp[i][j] = dp[i][j-1] + grid[i][j];
+                else if(j == 0) dp[i][j] = dp[i-1][j] + grid[i][j];
+                else dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]) + grid[i][j];
+            }
+        }
+        return dp[rows-1][clows-1];
+    }
+```
+
+
+
+#### [48. 最长不含重复字符的子字符串](https://leetcode-cn.com/problems/zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof/)
+
+请从字符串中找出一个最长的不包含重复字符的子字符串，计算该最长子字符串的长度。
+
+示例
+
+```html
+输入: "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+
+输入: "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+```
+
+思路：
+
+动态规划：遍历字符串，用hashmap存当前字符<char, index>, 遇见相同字符就调整目前字符串的开始index
+
+```java
+	public int lengthOfLongestSubstring(String s) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        int res = 0;
+        int tmp = 0;
+        for(int j = 0; j < s.length(); j++){
+            //获取当前字符在的index，如果没有则设置为-1
+            int index = map.getOrDefault(s.charAt(j), -1);
+			//放入map
+            map.put(s.charAt(j), j);
+            //判断是否在当前字符串中重复
+            tmp = tmp < j - index ? tmp + 1 : j - index;
+            res = Math.max(tmp, res);
+        }
+        return res;
+    }
+```
 
 
 
@@ -2189,4 +2332,66 @@ TopK的问题。
         return dp[n-1];
 	}
 ```
+
+
+
+#### [剑指 Offer 50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
+
+在字符串 s 中找出第一个只出现一次的字符。如果没有，返回一个单空格。 s 只包含小写字母。
+
+示例:
+
+```html
+s = "abaccdeff"
+返回 "b"
+
+s = "" 
+返回 " "
+```
+
+思路：
+
+- 哈希表：每一个字符和出现的次数存为<key, value>，遍历两次
+- 数组：类似于hash表，但是key用数组位置表示了
+
+```java
+	public char firstUniqChar(String s) {
+        int[] count = new int[26];
+        char[] chars = s.toCharArray();
+        
+        for(char c : chars)
+            count[c - 'a']++;
+        //不是根据count[]遍历的，还是按照原来str字符的顺序遍历的，所以两次遍历时ok的
+        for(char c : chars){
+            if(count[c - 'a'] == 1)
+                return c;
+        }
+
+        // 虽然没有占空间，但是时间复杂度增加了
+        // for(int i = 0; i < s.length(); i++){
+        //     count[s.charAt(i) - 'a']++;
+        // }
+        // for(int i = 0; i < s.length(); i++){
+        //     if(count[s.charAt(i) - 'a'] == 1)
+        //         return s.charAt(i);
+        // }
+
+        return ' ';
+    }
+```
+
+
+
+#### [剑指 Offer 51. 数组中的逆序对](https://leetcode-cn.com/problems/shu-zu-zhong-de-ni-xu-dui-lcof/)
+
+在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组，求出这个数组中的逆序对的总数。
+
+示例:
+
+```html
+输入: [7,5,6,4]
+输出: 5
+```
+
+思路：
 
