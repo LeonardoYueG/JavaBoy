@@ -448,6 +448,76 @@ public int findMinArrowShots(int[][] points) {
     }
 ```
 
+#### [165. 比较版本号](https://leetcode-cn.com/problems/compare-version-numbers/)
+
+比较两个版本号 version1 和 version2。
+
+如果 version1 > version2 返回 1，如果 version1 < version2 返回 -1， 除此之外返回 0。
+
+示例
+
+```html
+输入: version1 = "0.1", version2 = "1.1"
+输出: -1
+
+输入: version1 = "1.0.1", version2 = "1"
+输出: 1
+
+输入: version1 = "7.5.2.4", version2 = "7.5.3"
+输出: -1
+```
+
+思路：
+
+- 分割+解析：用小数点分割字符串，然后按位比较，但是需要注意的是小数点是特殊字符，要用转义符转义
+- 双指针：不对字符串分割，分别遍历字符串每一位，每找到一个小数点就看作为一个整数，两个整数做比较
+
+```java
+	public int compareVersion(String version1, String version2) {
+        int len1 = version1.length();
+        int len2 = version2.length();
+        int startIndex1 = 0;
+        int startIndex2 = 0;
+        while(startIndex1 < len1 || startIndex2 < len2){//是 || 不要写成&&了
+            int num1 = 0;
+            int num2 = 0;
+            while(startIndex1 < len1 && version1.charAt(startIndex1) != '.'){
+                num1 = num1 * 10 + version1.charAt(startIndex1) - '0';
+                startIndex1++;
+            }
+            while(startIndex2 < len2 && version2.charAt(startIndex2) != '.'){
+                num2 = num2 * 10 + version2.charAt(startIndex2) - '0';
+                startIndex2++;
+            }
+            if(num1 > num2){
+                return 1;
+            }else if(num1 < num2){
+                return -1;
+            }
+            startIndex1++;
+            startIndex2++;
+        }
+        return 0;
+    }
+    // public int compareVersion(String version1, String version2) {
+    //     String[] ver1Arr = version1.split("\\.");
+    //     String[] ver2Arr = version2.split("\\.");
+    //     int len1 = ver1Arr.length;
+    //     int len2 = ver2Arr.length;
+    //     int maxLen = Math.max(len1, len2);
+    //     for(int i = 0; i < maxLen; i++){
+    //         int ver1Num = i < len1 ? Integer.valueOf(ver1Arr[i]) : 0;
+    //         int ver2Num = i < len2 ? Integer.valueOf(ver2Arr[i]) : 0;
+    //         if( ver1Num > ver2Num){
+    //             return 1;
+    //         }else if(ver1Num < ver2Num){
+    //             return -1;
+    //         }
+    //     }
+    //     return 0;
+    // }
+```
+
 
 
 ## 字符串
@@ -553,6 +623,57 @@ board =
         }
         board[i][j] = tmp;
         return false;
+    }
+```
+
+
+
+
+
+## 二叉树
+
+#### [199. 二叉树的右视图](https://leetcode-cn.com/problems/binary-tree-right-side-view/)
+
+给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+
+示例:
+
+```java
+输入: [1,2,3,null,5,null,4]
+输出: [1, 3, 4]
+解释:
+
+   1            <---
+ /   \
+2     3         <---
+ \     \
+  5     4       <---
+```
+
+思路：
+
+层次遍历：取该层最后一个数。
+
+左视图类似
+
+```java
+	public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> res = new ArrayList<Integer>();
+        if(root != null){
+            Queue<TreeNode> queue = new LinkedList<TreeNode>();
+            queue.add(root);
+            while(!queue.isEmpty()){
+                int size = queue.size();
+                for(int i = 0; i < size; i++){
+                    TreeNode node = queue.poll();
+                    if(i == size - 1) res.add(node.val);
+                    if(node.left != null) queue.add(node.left);
+                    if(node.right != null) queue.add(node.right);
+                }
+                
+            }
+        }
+        return res;
     }
 ```
 

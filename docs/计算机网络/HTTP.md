@@ -595,13 +595,13 @@ HTTP 有以下安全性问题：
 - 不验证通信方的身份，通信方的身份有可能遭遇伪装；
 - 无法证明报文的完整性，报文有可能遭篡改。
 
-HTTPS 并不是新协议，而是让 HTTP 先和 SSL（Secure Sockets Layer）通信，再由 SSL 和 TCP 通信，也就是说 HTTPS 使用了隧道进行通信。
+HTTPS 并不是新协议，而是让 HTTP 先和 SSL（Secure Sockets Layer）通信，再由 SSL 和 TCP 通信。
 
 通过使用 SSL，HTTPS 具有了加密（防窃听）、认证（防伪装）和完整性保护（防篡改）。
 
 <img src="image/ssl-offloading.jpg" alt="img" style="zoom:67%;" />
 
-## 加密
+## 1. 加密
 
 ### 1. 对称密钥加密
 
@@ -634,7 +634,7 @@ HTTPS 并不是新协议，而是让 HTTP 先和 SSL（Secure Sockets Layer）�
 
 <img src="image/How-HTTPS-Works.png" alt="img" style="zoom: 25%;" />
 
-## 认证
+## 2. 认证
 
 通过使用   **证书**   来对通信方进行认证。
 
@@ -646,7 +646,7 @@ HTTPS 并不是新协议，而是让 HTTP 先和 SSL（Secure Sockets Layer）�
 
 ![img](image/2017-06-11-ca.png)
 
-## 完整性保护
+## 3. 完整性保护
 
 SSL 提供报文摘要功能来进行完整性保护。
 
