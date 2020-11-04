@@ -1,3 +1,5 @@
+
+
 #### [03. 数组中重复的数字](https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/)
 
 找出数组中重复的数字。
@@ -2335,7 +2337,7 @@ TopK的问题。
 
 
 
-#### [剑指 Offer 50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
+#### [50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
 
 在字符串 s 中找出第一个只出现一次的字符。如果没有，返回一个单空格。 s 只包含小写字母。
 
@@ -2382,7 +2384,7 @@ s = ""
 
 
 
-#### [剑指 Offer 51. 数组中的逆序对](https://leetcode-cn.com/problems/shu-zu-zhong-de-ni-xu-dui-lcof/)
+#### [未--51. 数组中的逆序对](https://leetcode-cn.com/problems/shu-zu-zhong-de-ni-xu-dui-lcof/)
 
 在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组，求出这个数组中的逆序对的总数。
 
@@ -2395,3 +2397,936 @@ s = ""
 
 思路：
 
+
+
+
+
+#### [52. 两个链表的第一个公共节点](https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/)
+
+输入两个链表，找出它们的第一个公共节点。
+
+思路：
+
+本题是单链表，先判断两个链表的尾节点是否相同（同时计算链表长度lenA, lenB），不相同则不相交，相交通过长的先走Math.abs（lenA - lenB）长度，然后一起移动，第一相遇点即为第一个公共点。
+
+```java
+	public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        int lenA = 0;
+        int lenB = 0;
+        ListNode tmpA = headA;
+        ListNode tmpB = headB;
+        while(tmpA != null){
+            tmpA = tmpA.next;
+            lenA++;
+        }
+        while(tmpB != null){
+            tmpB = tmpB.next;
+            lenB++;
+        }
+        //不相交
+        if(tmpA != tmpB){
+            return null;
+        }
+
+        tmpA = headA;
+        tmpB = headB;
+        int tmp = Math.abs(lenA - lenB);
+        while(tmp-- != 0){
+            if(lenA > lenB){
+                tmpA = tmpA.next;
+            }
+            else{
+                tmpB = tmpB.next;
+            }
+        }
+        int min = Math.min(lenA,lenB);
+        while(min-- != 0){
+            if(tmpA == tmpB){
+                return tmpA;
+            }
+            tmpA = tmpA.next;
+            tmpB = tmpB.next;
+
+        }
+        return null;
+    }
+```
+
+
+
+#### [53 - I. 在排序数组中查找数字 I](https://leetcode-cn.com/problems/zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof/)
+
+统计一个数字在排序数组中出现的次数。
+
+示例:
+
+```html
+输入: nums = [5,7,7,8,8,10], target = 8
+输出: 2
+
+输入: nums = [5,7,7,8,8,10], target = 6
+输出: 0
+```
+
+思路：
+
+二分法查找数的左边界
+
+```java
+	public int search(int[] nums, int target) {
+        if(nums.length == 0){
+            return 0;
+        }
+        //left range index
+        int index = binarySearch(nums, target);
+        int count = 0;
+        if(nums[index] == target){
+            for(int i = index; i < nums.length; i++){
+                if(nums[i] == target){
+                    count++;
+                }
+                else{
+                    return count;
+                }
+                
+            }
+        }
+        return count;
+
+    }
+    //left range index binarySearch
+    public static int binarySearch(int[] nums, int target){
+        int left = 0;
+        int right = nums.length - 1;
+        while(left < right){
+            int mid = left + (right - left) / 2;
+            if(nums[mid] < target){
+                left = mid + 1;
+            }else{
+                right = mid;
+            }
+        }
+        return left;
+    }
+```
+
+
+
+#### [53 - II. 0～n-1中缺失的数字](https://leetcode-cn.com/problems/que-shi-de-shu-zi-lcof/)
+
+一个长度为n-1的递增排序数组中的所有数字都是唯一的，并且每个数字都在范围0～n-1之内。在范围0～n-1内的n个数字中有且只有一个数字不在该数组中，请找出这个数字。
+
+示例:
+
+```html
+输入: [0,1,3]
+输出: 2
+
+输入: [0,1,2,3,4,5,6,7,9]
+输出: 8
+```
+
+思路：
+
+二分法：比较的判断标准是当前位置的index和数是否相等，相等说明数在后半部分，否则在前半部分、
+
+```java
+	public int missingNumber(int[] nums) {
+        return binarySearch(nums);
+    }
+
+    public static int binarySearch(int[] nums){
+        int left = 0;
+        int right = nums.length - 1;
+        while(left <= right){
+            int mid = left + (right - left ) / 2;
+
+            if(nums[mid] == mid){
+                left = mid + 1;
+            }
+            else{
+                right = mid - 1;
+            }
+        }
+        return left;
+    }
+}
+```
+
+
+
+#### [54. 二叉搜索树的第k大节点](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/)
+
+给定一棵二叉搜索树，请找出其中第k大的节点。
+
+示例:
+
+```html
+输入: root = [3,1,4,null,2], k = 1
+   3
+  / \
+ 1   4
+  \
+   2
+输出: 4
+```
+
+思路：
+
+倒中序遍历：中序遍历是递增序列，中序遍历的倒叙即为递减，方法就是用right节点将二叉树分割。
+
+```java
+	public int kthLargest(TreeNode root, int k) {
+        Stack<TreeNode> stack = new Stack<>();
+        //把中序遍历倒过来, 就是该一下用right去切割二叉树
+        int count = 0;
+        if(root != null){
+            while(!stack.isEmpty() || root != null){
+                if(root != null){
+                    stack.push(root);
+                    root = root.right;
+                }else{
+                    TreeNode tmp = stack.pop();
+                    count++;
+                    if(count == k){
+                        return tmp.val;
+                    }
+                    root = tmp.left;
+                }                
+            }
+        }
+        return -1;
+    }
+```
+
+
+
+#### [55 - I. 二叉树的深度](https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof/)
+
+输入一棵二叉树的根节点，求该树的深度。从根节点到叶节点依次经过的节点（含根、叶节点）形成树的一条路径，最长路径的长度为树的深度。
+
+示例：
+
+```
+给定二叉树：[3,9,20,null,null,15,7]
+	3
+   / \
+  9  20
+    /  \
+   15   7
+```
+
+思路：
+
+递归：从最底层开始递归，每次返回两个节点中最大深度的值
+
+```java
+	public int maxDepth(TreeNode root) {
+        if(root == null){
+            return 0;
+        }
+        int left = 0;
+        int right = 0;
+        if(root.left != null){
+        left = maxDepth(root.left);
+        }
+        if(root.right != null){
+        right = maxDepth(root.right);
+        }
+        return Math.max(left, right) + 1;
+    }
+```
+
+
+
+#### [55 - II. 平衡二叉树](https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/)
+
+输入一棵二叉树的根节点，判断该树是不是平衡二叉树。如果某二叉树中任意节点的左右子树的深度相差不超过1，那么它就是一棵平衡二叉树。
+
+示例：
+
+```html
+	3
+   / \
+  9  20
+    /  \
+   15   7
+结果：True
+```
+
+思路：
+
+从底层开始递归，每一层都判断两棵左右子树是否平衡，如果不平衡直接返回特定值，如果平衡返回子树深度较大者
+
+```java
+	public boolean isBalanced(TreeNode root) {
+        if(root == null){
+            return true;
+        }
+        return isBalance(root) == -1 ? false : true;
+
+    }
+    // -1 symbol the tree is not balance
+    public static int isBalance(TreeNode node){
+        if(node == null){
+            return 0;
+        }
+        int left = isBalance(node.left);
+        if(left == -1){
+            return -1;
+        }
+        int right = isBalance(node.right);
+        if(right == -1){
+            return -1;
+        }
+        if(Math.abs(left-right) > 1){
+            return -1;
+        }
+        return Math.max(left, right) + 1;
+    }
+```
+
+
+
+#### [56 - I. 数组中数字出现的次数](https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/)
+
+一个整型数组 `nums` 里除两个数字之外，其他数字都出现了两次。请写程序找出这两个只出现一次的数字。要求时间复杂度是O(n)，空间复杂度是O(1)。
+
+示例：
+
+```html
+输入：nums = [4,1,4,6]
+输出：[1,6] 或 [6,1]
+
+输入：nums = [1,2,10,4,1,4,3,3]
+输出：[2,10] 或 [10,2]
+```
+
+思路：
+
+使用异或得到两个最终异或值，然后通过两个数不相同的位分别找到两个数
+
+
+
+异或的性质
+
+- 两个数字异或的结果a^b是将a和b的二进制每一位进行运算，得出的数字。 
+- 运算的逻辑是如果同一位的数字相同则为 0，不同则为 1
+
+异或的规律
+
+- 任何数和本身异或则为 0
+- 任何数和 0 异或是 本身
+- 异或满足交换律。 即 a ^ b ^ c ，等价于 a ^ c ^ b
+
+
+
+```java
+    public int[] singleNumbers(int[] nums) {
+        int tmp = 0;
+        for(int num : nums){
+            tmp ^= num;
+        }
+
+        // # 找到第一位不是0的
+        int h = 1;
+        while((tmp & h) == 0){
+            h <<= 1;
+        }
+        int[] res = new int[2];
+        for(int num : nums){
+            if((h & num )== 0){
+                res[0] ^= num;
+            }else{
+                res[1] ^= num;
+            }
+        }
+        return res;
+    }
+```
+
+
+
+#### [56 - II. 数组中数字出现的次数 II](https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof/)
+
+在一个数组 `nums` 中除一个数字只出现一次之外，其他数字都出现了三次。请找出那个只出现一次的数字。
+
+示例：
+
+```html
+输入：nums = [3,4,3,3]
+输出：4
+
+输入：nums = [9,1,7,9,7,9,7]
+输出：1
+```
+
+思路：将所有数按位拆解相加，最后每位之和不为3的倍数即为所求之数的位
+
+```java
+	public int singleNumber(int[] nums) {
+        int[] counts = new int[32];
+        for(int num : nums){
+            for(int j = 0; j < 32; j++){                
+                counts[j] += num & 1;//依次统计每一位上面的1的个数
+                num >>>= 1;//从第j位到第j+1位
+            }
+        }
+        int res = 0;
+        //数字出现的次数
+        int m = 3;
+        for(int i = 0; i < 32; i++){
+            res <<= 1;
+            //需要从最高位开始统计，最后得到的数才是正确的
+            res |= counts[31-i] % 3;
+        }
+        return res;
+
+    }
+```
+
+
+
+#### [57. 和为s的两个数字](https://leetcode-cn.com/problems/he-wei-sde-liang-ge-shu-zi-lcof/)
+
+输入一个递增排序的数组和一个数字s，在数组中查找两个数，使得它们的和正好是s。如果有多对数字的和等于s，则输出任意一对即可。	
+
+示例：
+
+```html
+输入：nums = [2,7,11,15], target = 9
+输出：[2,7] 或者 [7,2]
+```
+
+思路：
+
+双指针：小于则移动left指针，大于则移动右指针。
+
+```java
+	public int[] twoSum(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        int[] res = new int[2];
+        while(left < right){
+            int tmp = nums[left] + nums[right];
+            if(tmp == target){
+                res[0] = nums[left];
+                res[1] = nums[right];
+                return res;
+            }else if(tmp > target){
+                right--;
+            }else{
+                left++;
+            }
+        }
+        return res;
+
+    }
+```
+
+
+
+#### [57 - II. 和为s的连续正数序列](https://leetcode-cn.com/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof/)
+
+输入一个正整数 target ，输出所有和为 target 的连续正整数序列（至少含有两个数）。
+
+序列内的数字由小到大排列，不同序列按照首个数字从小到大排列。
+
+示例：
+
+```html
+输入：target = 9
+输出：[[2,3,4],[4,5]]
+
+输入：target = 15
+输出：[[1,2,3,4,5],[4,5,6],[7,8]]
+```
+
+思路：
+
+使用一个滑动窗口表示当前数组总和，小于则移动右边界，大于则移动左边界，用一个值表示滑动窗口当前之和（不需要每次都计算了）
+
+```java
+    public int[][] findContinuousSequence(int target) {
+        //还可以在里面放数组就很棒
+        List<int[]> res = new ArrayList<>();
+             
+        int left = 1;
+        int right = 1;
+        int sum = 0; //左闭右开，左右初始化都为1的时候窗口里面没有数据sum = 0
+        int endPoint = (target / 2) + 1;
+        // while(left <= endPoint && right <= endPoint){
+        //最开始的初始条件写错了，因为左闭右开，没有包含endpoint, 而且不需要判断right,判断左边就行了
+        while(left <= endPoint){
+            //这儿计算用了一个很鸡贼的方法，不是每次都重新算left到right,因为是一个滑动窗口，只需要把新添加的元素加到里面，把移除窗口的元素减去就行
+            if(sum < target){
+                //使用的是左闭右开的区间(先加sum,后移动窗口)，这样好计算窗口大小 j - i就是窗口大小,不然是j - i + 1 
+                sum += right;
+                right++;
+                
+            }else if(sum > target){
+                sum -= left;
+                left++;
+            }else{
+                int[] arr = new int[right-left]; 
+                for(int k = left; k < right; k++){
+                    arr[k-left] = k;
+                }
+                res.add(arr);
+                //还要移动新的窗口，因为不移动始终停留在这个位置了
+                sum -= left;
+                left++;
+            }
+        }
+        return res.toArray(new int[res.size()][]);
+    }
+```
+
+
+
+#### [58 - I. 翻转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/)
+
+输入一个英文句子，翻转句子中单词的顺序，但单词内字符的顺序不变。为简单起见，标点符号和普通字母一样处理。例如输入字符串"I am a student. "，则输出"student. a am I"。
+
+示例：
+
+```html
+输入: "the sky is blue"
+输出: "blue is sky the"
+
+输入: "  hello world!  "
+输出: "world! hello"
+解释: 输入字符串可以在前面或者后面包含多余的空格，但是反转后的字符不能包括。
+```
+
+思路：
+
+用两个指针，从后往前遍历，两个指针分别指向单词的开头的结尾，使用StringBuilder保存新单词，注意小细节多个空格，如何起始位置处理等等
+
+```java
+    public String reverseWords(String s) {
+        s = s.trim();
+        int j = s.length() - 1;
+        int i = j;
+        StringBuilder res = new StringBuilder();
+        //在最后一个单词循环完毕的时候i = -1,就会终止
+        while(j >= 0){            
+            while(i >= 0 && s.charAt(i) != ' ')i--; //要在这儿加i>=0,因为不判断第一个单词调转的时候会出现错误
+            res.append(s.substring(i + 1, j + 1) + ' ');//substring()都是小写，取的是左闭右开，加空格
+            while(i >= 0 && s.charAt(i) == ' ') i--; // 跳过单词间空格
+            j = i;
+        }        
+        return res.toString().trim();//.trim()最后一个字符串多加一个空格
+    }
+```
+
+
+
+#### [58 - II. 左旋转字符串](https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/)
+
+字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。
+
+示例 ：
+
+```html
+输入: s = "abcdefg", k = 2
+输出: "cdefgab"
+```
+
+思路：
+
+substring()函数的使用
+
+```java
+    public String reverseLeftWords(String s, int n) {
+        if(s.length() < n){
+            return "";
+        }
+        StringBuilder str = new StringBuilder();
+        return str.append(s.substring(n, s.length())).append(s.substring(0,n)).toString();
+
+    }
+```
+
+
+
+#### [59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
+
+给定一个数组 `nums` 和滑动窗口的大小 `k`，请找出所有滑动窗口里的最大值。
+
+示例:
+
+```html
+输入: nums = [1,3,-1,-3,5,3,6,7], 和 k = 3
+输出: [3,3,5,5,6,7] 
+```
+
+思路：
+
+用一个递减窗口存放当前放入窗口的数据，那么窗口的第一个数据一定是当前窗口的最大值
+
+```java
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if(nums == null || nums.length < k || k < 1){
+            return new int[]{};
+        }
+        int len = nums.length;
+        LinkedList<Integer> qmax = new LinkedList<>();
+        int[] res = new int[len - k + 1];
+        int index = 0;
+        for(int i = 0; i < len; i++){
+            while(!qmax.isEmpty() && nums[qmax.peekLast()] <= nums[i]){
+                qmax.pollLast();
+            }
+            qmax.addLast(i);
+
+            if(qmax.peekFirst() == i - k){
+                qmax.pollFirst();
+            }
+            //这儿是大于等于
+            if(i >= k - 1){
+                res[index++] = nums[qmax.peekFirst()];
+            }
+        }
+        return res;
+
+    }
+```
+
+
+
+#### [61. 扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)
+
+从扑克牌中随机抽5张牌，判断是不是一个顺子，即这5张牌是不是连续的。2～10为数字本身，A为1，J为11，Q为12，K为13，而大、小王为 0 ，可以看成任意数字。A 不能视为 14。
+
+示例:
+
+```html
+输入: [1,2,3,4,5]
+输出: True
+
+输入: [0,0,1,2,5]
+输出: True
+```
+
+思路：
+
+- ~~暴力：先计算大小王的个数，然后依次遍历，每次差的位置插入大小王，出现完全能插入为true，否则false~~
+- 计算头尾：数组排序，计算大小王个数，计算头尾之间的差值，如果差值大于5则不能构成顺子。因为没有那么大小王可以填补空缺
+
+```java
+	public boolean isStraight(int[] nums) {
+        int joker = 0;
+        Arrays.sort(nums); // 数组排序
+        for(int i = 0; i < 4; i++) {
+            if(nums[i] == 0) joker++; // 统计大小王数量
+            else if(nums[i] == nums[i + 1]) return false; // 若有重复，提前返回 false
+        }
+        return nums[4] - nums[joker] < 5; // 最大牌 - 最小牌 < 5 则可构成顺子，因为如果没有重复元素一个连续的数组，跨度不会超过5
+    }
+```
+
+
+
+#### [未--62. 圆圈中最后剩下的数字](https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/)
+
+**约瑟夫环问题**
+
+0,1, ,n-1这n个数字排成一个圆圈，从数字0开始，每次从这个圆圈里删除第m个数字。求出这个圆圈里剩下的最后一个数字。
+
+例如，0、1、2、3、4这5个数字组成一个圆圈，从数字0开始每次删除第3个数字，则删除的前4个数字依次是2、0、4、1，因此最后剩下的数字是3。
+
+示例：
+
+```html
+输入: n = 5, m = 3
+输出: 3
+
+输入: n = 10, m = 17
+输出: 2
+```
+
+思路：
+
+模拟法：模拟整个过程
+
+公式法：
+
+```java
+	// // 方法一：模拟环  ArrayList移动数据的成本太高
+    // public int lastRemaining(int n, int m) {
+    //     ArrayList<Integer> list = new ArrayList<>();
+    //     for(int i = 0; i < n; i++){
+    //         list.add(i);
+    //     }
+    //     int index = 0;
+    //     while(n > 1){
+    //         index = (index + m -1) % n;
+    //         list.remove(index);
+    //         n--;
+    //     }
+    //     return list.get(0);
+
+    // }
+
+    // 公式法
+    public int lastRemaining(int n, int m) {
+        int ans = 0;
+        // 最后一轮剩下2个人，所以从2开始反推
+        for (int i = 2; i <= n; i++) {
+            ans = (ans + m) % i;
+        }
+        return ans;
+    }
+```
+
+
+
+#### [63. 股票的最大利润](https://leetcode-cn.com/problems/gu-piao-de-zui-da-li-run-lcof/)
+
+假设把某股票的价格按照时间先后顺序存储在数组中，请问买卖该股票一次可能获得的最大利润是多少？
+
+示例:
+
+```html
+输入: [7,1,5,3,6,4]
+输出: 5
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格。
+
+输入: [7,6,4,3,1]
+输出: 0
+解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
+```
+
+**思路：**
+
+记录最低价格，如果当前价格小于最低价格，更新最低价格，每次都计算位置卖出价格计算利润。
+
+```java
+	public int maxProfit(int[] prices) {
+       // 一次遍历法，一次遍历法的话，其实要看透这个问题的本质，问题的本质是我们在寻找整个价格曲线的最低点
+        int min = Integer.MAX_VALUE;
+        int max_price = 0;
+        for(int i= 0;i < prices.length; i++){
+            if(min > prices[i]){
+                min = prices[i];
+            }
+            if(prices[i]- min > max_price ){
+                max_price = prices[i]- min;
+            }
+        }
+        return max_price;
+    }
+```
+
+
+
+#### [64. 求1+2+…+n](https://leetcode-cn.com/problems/qiu-12n-lcof/)
+
+求 `1+2+...+n` ，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
+
+示例：
+
+```html
+输入: n = 3
+输出: 6
+```
+
+思路：
+
+递归 + 运算符的短路效应
+
+```java
+	int res = 0;
+    public int sumNums(int n) {
+        // 常见的逻辑运算符有三种，即 “与 && ”，“或 ||”，“非 ! ” ；而其有重要的短路效应，如下所示：
+        // if(A && B)  // 若 A 为 false ，则 B 的判断不会执行（即短路），直接判定 A && B 为 false
+        // if(A || B) // 若 A 为 true ，则 B 的判断不会执行（即短路），直接判定 A || B 为 true
+        boolean x = (n > 1 && sumNums(n - 1) > 0);
+        res += n;
+        return res;
+    }
+```
+
+
+
+#### [65. 不用加减乘除做加法](https://leetcode-cn.com/problems/bu-yong-jia-jian-cheng-chu-zuo-jia-fa-lcof/)
+
+写一个函数，求两个整数之和，要求在函数体内不得使用 “+”、“-”、“*”、“/” 四则运算符号。
+
+示例:
+
+```html
+输入: a = 1, b = 1
+输出: 2
+```
+
+思路：
+
+位运算
+
+```java
+    public int add(int a, int b) {
+        //这儿不是一位一位算的，而是每次都算出不含 进位和总的大小  and  进位和的大小，然后相加，
+        //然后迭代相加，总有进位和为0的情况
+        while(b != 0) { // 当进位为 0 时跳出
+            int c = (a & b) << 1;  // c = 进位
+            a ^= b; // a = 非进位和   是一次性就计算出两个数的和，迭代只是进位和和非进位和
+            b = c; // b = 进位和
+        }
+        return a;
+    }
+```
+
+
+
+#### [66. 构建乘积数组](https://leetcode-cn.com/problems/gou-jian-cheng-ji-shu-zu-lcof/)
+
+给定一个数组 `A[0,1,…,n-1]`，请构建一个数组 `B[0,1,…,n-1]`，其中 `B` 中的元素 `B[i]=A[0]×A[1]×…×A[i-1]×A[i+1]×…×A[n-1]`。不能使用除法。
+
+示例:
+
+```html
+输入: [1,2,3,4,5]
+输出: [120,60,40,30,24]
+```
+
+思路：
+
+左右两端分别相乘，每次相乘不计算当前位，同时每次相乘保留当前相乘之积
+
+```java
+    public int[] constructArr(int[] a) {
+        int[] res = new int[a.length];
+        // for(int i = 0; i < a.length; i++){
+        //     res[i] = 1;
+        //     for(int j = 0; j < a.length; j++){
+        //         if(i != j){
+        //             res[i] *= a[j];
+        //         }
+        //     }
+        // }
+        
+        //上面是一个N^2的操作，可能会出现超时的问题
+        //其实我们可以从两边进行计算,把每次得到值放入res[i]中,这样就制用遍历两次就行
+        //看那个上下三角形
+        if(a.length == 0) return new int[0];//不判断会出现越界的情况
+        res[0] = 1;
+        int tmp = 1;
+        for(int i = 1; i < a.length; i++){
+            res[i] = res[i-1] * a[i-1];// *a[i-1]就是将第i个数抛弃了
+        }
+        for(int i = a.length - 2; i >= 0; i--){
+            tmp *= a[i+1];
+            res[i] *= tmp;  
+        }
+        return res;
+
+    }
+```
+
+
+
+#### [未--67. 把字符串转换成整数](https://leetcode-cn.com/problems/ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof/)
+
+写一个函数 StrToInt，实现把字符串转换成整数这个功能。不能使用 atoi 或者其他类似的库函数。
+
+示例
+
+```html
+输入: "42"
+输出: 42
+
+输入: "   -42"
+输出: -42
+解释: 第一个非空白字符为 '-', 它是一个负号。
+     我们尽可能将负号与后面所有连续出现的数字组合起来，最后得到 -42 。
+
+输入: "4193 with words"
+输出: 4193
+解释: 转换截止于数字 '3' ，因为它的下一个字符不为数字。
+```
+
+
+
+#### [68 - I. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
+
+给定一个二叉搜索树, 找到该树中两个指定节点的**最近**公共祖先。
+
+示例：
+
+```html
+输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
+输出: 6 
+解释: 节点 2 和节点 8 的最近公共祖先是 6。
+```
+
+思路：
+
+迭代（注意不是递归）：通过判断两个数的值与根节点的关系，从根节点开始迭代。
+
+- 都小于当前节点都在左节点，往左移动
+
+- 都大于当前节点都在右节点，往右移动
+
+- 一小一大，当前节点为最近公共祖先
+
+```java
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        //重要条件：是二叉搜索树
+        //会出现的情况：1.p.val q.val都小于root.val, 在root.left
+        //             2.p.val q.val都大于root.val, 在root.left
+        //             3.1.p.val q.val一个大于一个小于root.val, 在root.left
+        //方案一：迭代
+        while(root != null){
+            if(root.val < p.val && root.val < q.val){
+                root = root.right;
+            }else if(root.val > p.val && root.val > q.val){
+                root = root.left;
+            }else{  
+                break;  //这个else就包含了root.val和q  p值不同时小于大于情况
+                        //（无论谁大谁小，还是是否有一个等于root.val,都是返回当前点）
+            }
+        }
+        return root;   
+    }
+```
+
+
+
+#### [68 - II. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
+
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。（和上一题的搜索二叉树不一样，不能用值判断）
+
+**思路：**
+
+后续遍历：
+
+![image-20201104235327446](image/image-20201104235327446.png)
+
+```java
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+
+        //思路：从叶子节点开始一层层往上找，如果叶子节点不是就返回null,是就返回该节点，
+        //      每往上遍历一层就会考虑现在是不是都找到两个节点了，如果是直接返回当前节点，当前节点会一直返回到最高层
+        //      如果只找到了一个那么就返回找打的那个就行，然后递归的去找
+
+        //终止条件
+        if(root == null || root.val == p.val || root.val == q.val){
+            return root;
+        }
+        //递归循环
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        
+        if(left == null && right == null) return null;//左右孩子里面一个p q都没有
+        if(left == null && right != null) return right;//1.左右孩子都在right里面（可能返回是最近的公共祖先）
+                                                       //2.左右孩子有一个在right里面
+                                                       //两种情况都返回right就行
+        if(left != null && right == null) return left; //同上
+
+        //if(left != null && right != null) return root;//左右孩子分别包含p q
+        return root;//上面的改写，必须要有一个return
+    }
+```
