@@ -394,6 +394,95 @@ public int findMinArrowShots(int[][] points) {
 
 
 
+#### [32. 最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/)
+
+给定一个只包含 `'('` 和 `')'` 的字符串，找出最长的包含有效括号的子串的长度。有效指的是：连续有效的括号（“(()）”和“()(())”）都是有效括号
+
+示例
+
+```html
+输入: "(()"
+输出: 2
+解释: 最长有效括号子串为 "()"
+
+输入: ")()())"
+输出: 4
+解释: 最长有效括号子串为 "()()"
+```
+
+思路：
+
+- **动态规划**：注意分清边界和关系，如果s.charAt(i) == ' ) '才能和前面的构成括号，动手画一下看看具体情况，两种情况分别讨论，注意考虑相邻是否有成对括号时，注意 i 的取值范围不能越界。
+  - ‘()()’
+  - '()(())'
+- **栈**：看官方解题思路
+- **双指针**：用left和right，分别表示 '(' 和 ‘)’ 的个数，letf == right的时候两者括号最多匹配，当right超过left时两者无法匹配，都置为0从新开始，上述方法无法解决 '(()'的情况，需要从右边再遍历一次。
+
+```java
+	public int longestValidParentheses(String s) {
+        int strLen = s.length();
+        int[] dp = new int[strLen];
+        int maxLen = 0;
+        for(int i = 1; i < strLen; i++){
+            if(s.charAt(i) == ')'){
+                if(s.charAt(i-1) == '('){
+                    //eg:'()()'dp[i-2]如果之前还有括号，加上之前的括号
+                    dp[i] = i >= 2 ? dp[i-2] + 2 : 2;
+                }
+                else{
+                    //(i - dp[i-1] - 1)当前位置相对应位置,eg:'(())'
+                    if((i - dp[i-1] - 1) >= 0 && s.charAt(i - dp[i-1] - 1) == '('){ 
+                        dp[i] = dp[i-1] + 2;
+                        //相邻之前的位置‘()(())’
+                        if(i - dp[i-1] - 2 >= 0){
+                            dp[i] = dp[i] + dp[i - dp[i-1] - 2];
+                        }
+                    }
+                }
+            }
+            maxLen = Math.max(maxLen, dp[i]);
+        }
+        return maxLen;
+    }
+
+
+    //双指针
+    public int longestValidParentheses(String s) {
+        int left = 0;
+        int right = 0;
+        int maxLen = 0;
+        for(int i = 0; i < s.length(); i++){
+            if(s.charAt(i) == '(') left++;
+            else right++;
+
+            if(left == right){
+                maxLen = Math.max(maxLen, 2 * right);
+            }else if(right > left){
+                left = 0;
+                right = 0;
+            }
+            
+        }
+        left = 0;
+        right = 0;
+
+        //解决上面无法解决的'(()'的情况,再从右往左遍历一次
+        for(int i = s.length() - 1; i >= 0; i--){
+            if(s.charAt(i) == ')') left++;
+            else right++;
+
+            if(left == right){
+                maxLen = Math.max(maxLen, 2 * right);
+            }else if(right > left){
+                left = 0;
+                right = 0;
+            }
+        }
+        return maxLen;
+
+    }
+```
+
 
 
 ## 数组问题
@@ -674,6 +763,171 @@ board =
             }
         }
         return res;
+    }
+```
+
+
+
+## 单调栈
+
+#### [739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+
+请根据每日 `气温` 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 `0` 来代替。
+
+示例：
+
+```html
+输入：temperatures = [73, 74, 75, 71, 69, 72, 76, 73]
+输出：[1, 1, 4, 2, 1, 1, 0, 0]
+```
+
+思路：
+
+正向暴力递归时间复杂度太高，因此可以想从后往前遍历，通过我们可以通过保存比前面节点大的信息，通过为了保存比当前大的，不是之后最大的，我们可以选用单调栈的方式
+
+```java
+//错误方法：
+//输出结果：[1,1,4,3,2,1,0,0]
+//片面强调了单调栈，会忽略掉中间信息，比如75会盖掉71, 69, 72的信息
+	public class Node{
+        private int val;
+        private int index;
+        public Node(int val, int index){
+            this.val = val;
+            this.index = index;
+        }
+    }
+    //单调栈：从底到上单调递减的栈
+    public int[] dailyTemperatures(int[] T) {
+        int len = T.length;
+        int[] waitDays = new int[len];
+        Stack<Node> stack = new Stack<>();
+        stack.push(new Node(T[len - 1], len - 1));
+
+        
+        for(int i = len - 2; i >= 0; i--){
+            if(T[i] <= stack.peek().val){
+                stack.push(new Node(T[i], i));
+            }else{
+                while(!stack.isEmpty() && T[i] > stack.peek().val){
+                    stack.pop();
+                }
+                stack.push(new Node(T[i], i));
+            }
+        }
+
+        for(int i = 0; i < len; i++){
+            while(!stack.isEmpty() && T[i] == stack.peek().val){
+                stack.pop();
+            }
+            waitDays[i] = stack.isEmpty() ? 0 : stack.peek().index - i;
+        }
+        return waitDays;
+
+    }
+
+
+	//正确方法，从后向前遍历，找到每个节点对应的等待天数
+    //单调栈中直接存索引，我们在保存单调栈的时候就计算waitDays数组，就不会出现中间数据丢失的情况
+    public int[] dailyTemperatures(int[] T) {
+        int len = T.length;
+        int[] waitDays = new int[len];
+        Stack<Integer> stack = new Stack<>();
+        stack.push(len - 1);
+        //waitDays[len-1] = 0;//默认为0
+
+        for(int i = len - 2; i >= 0; i--){
+            if(T[i] < T[stack.peek()]){
+                waitDays[i] = stack.peek() - i;
+                stack.push(i);
+            }else{
+                while(!stack.isEmpty() && T[i] >= T[stack.peek()]){
+                    stack.pop();
+                }
+                waitDays[i] = stack.isEmpty() ? 0 : stack.peek() - i;
+                stack.push(i);
+            }
+        }
+        return waitDays;
+    }
+
+	//优化方法
+	//正向遍历单调栈，当当前值大于栈顶值，说明我们找到了当前栈顶值的waitDays，弹出并更新
+	//操作比逆向的复杂度要低一些
+    public int[] dailyTemperatures(int[] T) {
+        int len = T.length;
+        int[] waitDays = new int[len];
+        Stack<Integer> stack = new Stack<>();
+        
+        for(int i = 0; i < len; i++){
+            while(!stack.isEmpty() && T[i] > T[stack.peek()]){
+                int preIndex = stack.pop();
+                waitDays[preIndex] = i - preIndex;
+            }
+            stack.push(i);
+        }
+        return waitDays;
+    }
+```
+
+
+
+## 前缀
+
+#### [560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
+
+给定一个整数数组和一个整数 **k，**你需要找到该数组中和为 **k** 的连续的子数组的个数。
+
+示例 :
+
+```html
+输入:nums = [1,1,1], k = 2
+输出: 2 , [1,1] 与 [1,1] 为两种不同的情况。
+```
+
+思路：
+
+- **暴力**：固定左边界，移动右边界，查找和等于K的值
+
+- **前缀和**：通过前缀和的定义将题目转化为，有几种 i、j 的组合，满足 prefixSum[j] - prefixSum[i - 1] == kprefixSum[j]−prefixSum[i−1]==k。再因为我们不考虑出现前缀和的具体情况，所以我们用hashmap存<前缀和，前缀和出现的次数>，map(prefixSum[i] - k)存在说明前缀和之差为 K 就存在，count++;
+
+  ![image-20201109100757894](image/image-20201109100757894.png)
+
+```java
+    public int subarraySum(int[] nums, int k) {
+        if(nums == null || nums.length == 0){
+            return 0;
+        }
+        //暴力
+        //固定左边界，查找右边界等于K的
+        int count = 0;
+        for(int left = 0; left < nums.length; left++){
+            int sum = 0;
+            for(int right = left; right < nums.length; right++){
+                sum += nums[right];
+                if(sum == k){
+                    count++;
+                }
+            }
+        }
+        return count;
+
+    }
+
+    public int subarraySum(int[] nums, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int count = 0;
+        int preSum  = 0;
+        map.put(0, 1);//对于一开始的情况，下标 0 之前没有元素，可以认为前缀和为 0，个数为 1 个，解决前缀和即为K值的情况
+        for(int i = 0; i < nums.length; i++){
+            preSum += nums[i];
+            if(map.containsKey(preSum - k)){
+                count += map.get(preSum - k);
+            }
+
+            map.put(preSum, map.getOrDefault(preSum, 0) + 1);
+        }
+        return count;
     }
 ```
 
