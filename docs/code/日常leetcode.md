@@ -558,8 +558,8 @@ public int findMinArrowShots(int[][] points) {
 
 思路：
 
-- 分割+解析：用小数点分割字符串，然后按位比较，但是需要注意的是小数点是特殊字符，要用转义符转义
-- 双指针：不对字符串分割，分别遍历字符串每一位，每找到一个小数点就看作为一个整数，两个整数做比较
+- **分割+解析**：用小数点分割字符串，然后按位比较，但是需要注意的是小数点是特殊字符，要用转义符转义
+- **双指针**：不对字符串分割，分别遍历字符串每一位，每找到一个小数点就看作为一个整数，两个整数做比较
 
 ```java
 	public int compareVersion(String version1, String version2) {
@@ -606,6 +606,110 @@ public int findMinArrowShots(int[][] points) {
     //     return 0;
     // }
 ```
+
+
+
+#### [334. 递增的三元子序列](https://leetcode-cn.com/problems/increasing-triplet-subsequence/)
+
+给定一个未排序的数组，判断这个数组中是否存在长度为 3 的递增子序列。
+
+数学表达式如下:
+
+如果存在这样的 i, j, k,  且满足 0 ≤ i < j < k ≤ n-1，使得 arr[i] < arr[j] < arr[k] ，返回 true ; 否则返回 false 。
+
+说明: 要求算法的时间复杂度为 O(n)，空间复杂度为 O(1) 。
+
+**示例:**
+
+```html
+输入: [1,2,3,4,5]
+输出: true
+
+输入: [5,4,3,2,1]
+输出: false
+```
+
+思路：
+
+动态规划：双层嵌套循环找到，比当前数小的元素个数，dp[i] = max(dp[i], dp[j] + 1); dp[i]>=3返回true。
+
+双指针：small, mid保存两个较小数，找出一个同时大于small和mid的数即返回。
+
+```java
+    public boolean increasingTriplet(int[] nums) {
+        //small, mid保存两个较小数，找出一个同时大于small和mid的数即返回。
+        //对于[2,3,1,5]的情况，会把small更新为1,不影响后续结果，因为small = 1之后，保留了信息有一个大于small，小于mid的数在mid之前。
+        //对于[4,5,1,2,3]的情况，如果不更新已有的small和mid序列，可能出现序列丢失。
+        int small = Integer.MAX_VALUE;
+        int mid = Integer.MAX_VALUE;
+        for(int num : nums){
+            if(small >= num) small = num;//严格递增，所以是大于等于
+            else if(mid >= num) mid = num;
+            else return true;
+        }
+        return false;
+    }
+```
+
+#### [15. 三数之和](https://leetcode-cn.com/problems/3sum/)
+
+给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组
+
+示例：
+
+```java
+给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+
+满足要求的三元组集合为：
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+```
+
+思路：
+
+提供的数组无序，要找出全部三元组的成本很高，所以选择先排序，先确定一个位置（从左往右遍历），然后确定位置的右边区间的左右位置使用双指针，将问题转化为两数之和了，注意去重操作。
+
+```java
+    public List<List<Integer>> threeSum(int[] nums) {
+        //从i相邻的未查找区域的左右两端进行双指针移动
+        //因为不是返回索引，所以可以排序
+        //去重哪儿用的很巧
+        List<List<Integer>> ans = new ArrayList();
+        int len = nums.length;
+        if(nums == null || len < 3){
+            return ans;
+        }
+        Arrays.sort(nums);
+        for(int i = 0; i < len - 2; i++){
+            if(nums[i] > 0) break;//nums[i]是三个数中的第一个，如果第一个都大于了0，整体一定大于0；
+            if(i> 0 && nums[i] == nums[i-1]) continue;//去重,i需要大于0
+            int L = i + 1;
+            int R = len -1;
+            while(L < R){
+                int sum = nums[i] + nums[L] +nums[R];
+                if(sum == 0){
+                    ans.add(Arrays.asList(nums[i],nums[L],nums[R]));
+                    while (L<R && nums[L] == nums[L+1]) L++; // 去重
+                    while (L<R && nums[R] == nums[R-1]) R--; // 去重
+                    L++;
+                    R--;
+                }
+                else if (sum < 0) L++;
+                else if (sum > 0) R--;
+
+
+            } 
+        }
+        return ans;
+
+    }
+```
+
+
 
 
 
@@ -765,6 +869,56 @@ board =
         return res;
     }
 ```
+
+
+
+#### [617. 合并二叉树](https://leetcode-cn.com/problems/merge-two-binary-trees/)
+
+给定两个二叉树，想象当你将它们中的一个覆盖到另一个上时，两个二叉树的一些节点便会重叠。
+
+你需要将他们合并为一个新的二叉树。合并的规则是如果两个节点重叠，那么将他们的值相加作为节点合并后的新值，否则**不为** NULL 的节点将直接作为新二叉树的节点。
+
+示例：
+
+```html
+输入: 
+	Tree 1                     Tree 2                  
+          1                         2                             
+         / \                       / \                            
+        3   2                     1   3                        
+       /                           \   \                      
+      5                             4   7                  
+输出: 
+合并后的树:
+	     3
+	    / \
+	   4   5
+	  / \   \ 
+	 5   4   7
+```
+
+思路：
+
+递归
+
+```java
+    public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
+        if(t1 == null){
+            return t2;
+        }
+        if(t2 == null){
+            return t1;
+        }
+        t1.val += t2.val;
+        t1.left = mergeTrees(t1.left, t2.left);
+        t1.right = mergeTrees(t1.right, t2.right);
+        return t1;
+    }
+```
+
+
+
+
 
 
 
@@ -928,6 +1082,161 @@ board =
             map.put(preSum, map.getOrDefault(preSum, 0) + 1);
         }
         return count;
+    }
+```
+
+
+
+
+
+## 字典法
+
+#### [1. 两数之和](https://leetcode-cn.com/problems/two-sum/)
+
+给定一个整数数组 `nums` 和一个目标值 `target`，请你在该数组中找出和为目标值的那 **两个** 整数，并返回他们的数组下标。
+
+示例:
+
+```html
+给定 nums = [2, 7, 11, 15], target = 9
+
+因为 nums[0] + nums[1] = 2 + 7 = 9
+所以返回 [0, 1]
+```
+
+思路：
+
+字典法：使用一个hashmap<num[i], i>储存所有数，通过target - map.get(i)判断对象是否存在，**注意判断语句要放在map.put()之前。**
+
+```java
+    public int[] twoSum(int[] nums, int target) {
+        //排序下标就变了，我们是要返回原始的下标的
+        // Arrays.sort(nums);
+        // int left = 0;
+        // int right = nums.length - 1;
+        // while(left < right){
+        //     int sum = nums[left] + nums[right];
+        //     if(sum == target){
+        //         return new int[] {left, right};
+        //     }else if(sum < target){
+        //         left++;
+        //     }else{
+        //         right--;
+        //     }
+        // }
+        // return new int[2];
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int tmp = target - nums[i];
+            if(map.containsKey(tmp) && map.get(tmp) != i){
+                return new int[] { i, map.get(tmp) };
+            }
+            map.put(nums[i], i);//必须放在if后面，因为存在nums={3,3} target = 6和有相同值的情况，hashmap会将其覆盖掉
+        }
+        return new int[2];    
+    }
+```
+
+
+
+## 位运算
+
+#### [2. 两数相加](https://leetcode-cn.com/problems/add-two-numbers/)
+
+给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
+
+如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
+
+您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
+
+**示例：**
+
+```html
+输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
+输出：7 -> 0 -> 8
+原因：342 + 465 = 807
+```
+
+思路：
+
+双指针：分别指向两个链表，这儿需要注意进位（中间位的进位和最后一位的进位）和将两个链表变为等长放在同一个while进行相加。
+
+```java
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode pre = new ListNode(0);
+        ListNode cur = pre;
+        int carry = 0;
+        //如果按照相同部分在while相加，不同部分在不同while相加会出现如果相同部分的相加的仅为丢失
+        //eg:{9 8}和{1}，所以放到一起
+        while(l1 != null || l2 != null) {
+            int x = l1 == null ? 0 : l1.val;
+            int y = l2 == null ? 0 : l2.val;
+            int sum = x + y + carry;
+            
+            carry = sum / 10;
+            sum = sum % 10;
+            cur.next = new ListNode(sum);
+
+            cur = cur.next;
+            if(l1 != null)
+                l1 = l1.next;
+            if(l2 != null)
+                l2 = l2.next;
+        }
+
+        //最后一个相加有进位
+        if(carry == 1){
+            cur.next = new ListNode(carry);
+        }
+        //第一个节点为空，从第一个节点的下一个节点返回
+        return pre.next;
+
+    }
+```
+
+
+
+## 滑动窗口
+
+#### [3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
+
+给定一个字符串，请你找出其中不含有重复字符的 **最长子串** 的长度。
+
+示例:
+
+```
+输入: "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+
+输入: "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+
+输入: "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+	 请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+```
+
+**思路：**
+
+滑动窗口：每次寻找当前子串未重复的左边界（左边界的右边都为重复），更新左边界，通过hashmap< Character, index >将字符和字符位置存下来，从左往右遍历，每次判断字符是否已经出现，出现则更新左边界。
+
+```java
+    public int lengthOfLongestSubstring(String s) {
+        if (s.length()==0) return 0;
+        HashMap<Character, Integer> map = new HashMap<>();
+        int max = 0;
+        int left = 0;
+        for(int i = 0; i < s.length(); i++){
+            if(map.containsKey(s.charAt(i))){
+                left = Math.max(left, map.get(s.charAt(i)) + 1);//更新左边界，把left放在里面是因为可能其他字符也在更新左边界，防止左边界左移。
+            }
+            map.put(s.charAt(i), i);
+            max = Math.max(max, i - left + 1);
+        }
+        return max;
     }
 ```
 
