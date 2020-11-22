@@ -74,6 +74,12 @@
 
 
 
+
+
+
+
+
+
 #### [剑指 Offer 53 - I. 在排序数组中查找数字 I](https://leetcode-cn.com/problems/zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof/)
 
 统计一个数字在排序数组中出现的次数。
@@ -1238,6 +1244,79 @@ board =
             max = Math.max(max, i - left + 1);
         }
         return max;
+    }
+```
+
+
+
+## 前缀和
+
+#### [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/)
+
+相关问题：[112. 路径总和](https://leetcode-cn.com/problems/path-sum/)   [113. 路径总和 II](https://leetcode-cn.com/problems/path-sum-ii/)
+
+给定一个二叉树，它的每个结点都存放着一个整数值。
+
+找出路径和等于给定数值的路径总数。
+
+路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
+
+示例：
+
+root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
+
+```html
+	  10
+	 /  \
+	5   -3
+   / \    \
+  3   2   11
+ / \   \
+3  -2   1
+
+返回 3。和等于 8 的路径有:
+
+1.  5 -> 3
+2.  5 -> 2 -> 1
+3.  -3 -> 11
+```
+
+思路：
+
+**暴力：**对每一个节点进行递归
+
+**前缀和：**
+
+- 前缀和定义：到达当前位置路径上，路径上所有元素之和
+- 方法：如果两个节点的前缀总和是相同的，那么这些节点之间的元素总和为零。同样，在节点A和节点B处相差target，则位于节点A和节点B之间的元素之和是target。使用一个map存前缀和方便查询
+
+```java
+    public int pathSum(TreeNode root, int sum) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);//和刚好为sum的
+        return dfs(root, map, sum, 0);    
+    }
+
+    public int dfs(TreeNode root, Map<Integer, Integer> map, int sum, int currSum){
+        if(root == null){
+            return 0;
+        }
+
+        int res = 0;
+        currSum += root.val;
+
+        res += map.getOrDefault(currSum - sum, 0);
+
+        map.put(currSum, map.getOrDefault(currSum, 0) + 1);
+
+        res += dfs(root.left, map, sum, currSum);
+        res += dfs(root.right, map, sum, currSum);
+
+        map.put(currSum, map.get(currSum) - 1); //回溯
+        
+        return res;
     }
 ```
 
