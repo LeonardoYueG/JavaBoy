@@ -1221,7 +1221,8 @@ board =
 
 **思路：**
 
-滑动窗口：每次寻找当前子串未重复的左边界（左边界的右边都为重复），更新左边界，通过hashmap< Character, index >将字符和字符位置存下来，从左往右遍历，每次判断字符是否已经出现，出现则更新左边界。
+- **滑动窗口**：每次寻找当前子串未重复的左边界（左边界的右边都为重复），更新左边界，通过hashmap< Character, index >将字符和字符位置存下来，从左往右遍历，每次判断字符是否已经出现，出现则更新左边界。
+
 
 ```java
     public int lengthOfLongestSubstring(String s) {
