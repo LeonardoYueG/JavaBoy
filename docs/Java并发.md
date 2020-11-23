@@ -65,10 +65,11 @@
 
 ## 线程使用
 
-三种使用方法
+四种使用方法
 
 - 实现 Runnable 接口；
 - 实现 Callable 接口；
+- 实现FutureTask接口；
 - 继承 Thread 类。
 
 实现 Runnable 和 Callable 接口的类只能当做一个可以在线程中运行的任务，不是真正意义上的线程，因此最后还需要通过 Thread 来调用。可以说任务是通过线程驱动从而执行的。
@@ -113,6 +114,12 @@ public static void main(String[] args)throws ExecutionException, InterruptedExce
 }
 ```
 
+### 实现FutureTask接口
+
+FutureTask 实现了 RunnableFuture 接口，该接口继承自 Runnable 和 Future 接口，这使得 FutureTask 既可以当做一个任务执行，也可以有返回值。
+
+FutureTask 可用于异步获取执行结果或取消执行任务的场景。当一个计算任务需要执行很长时间，那么就可以用 FutureTask 来封装这个任务，主线程在完成自己的任务之后再去获取结果。
+
 ### 继承Thread类
 
 同样也是需要实现 run() 方法，因为 Thread 类也实现了 Runable 接口。
@@ -137,3 +144,16 @@ public static void main(String[] args){
 
 - Java 不支持多重继承，因此继承了 Thread 类就无法继承其它类，但是可以实现多个接口；
 - 类可能只要求可执行就行，继承整个 Thread 类开销过大。
+
+
+
+
+
+## 面试问题
+
+### 线程crash是否会导致进程崩溃？
+
+如果线程能够捕获异常，线程不崩溃，进而进程不崩溃，否则则会崩溃。
+
+因为线程只有单独stack，heap和地址空间（address space）是公有的，而且只有进程有自己的 address space，而这个 space 中经过合法申请的部分叫做 process space。Process space 之外的地址都是非法地址。当一个线程向非法地址读取或者写入，无法确认这个操作是否会影响同一进程中的其它线程，所以只能是整个进程一起崩溃。
+
