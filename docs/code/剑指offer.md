@@ -1881,8 +1881,8 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 
 TopK的问题。
 
-- 快排：趋于线性的复杂度O(N)
-- 堆：使用大根堆/小根堆对数据排序，K为堆的大小，这样得到TopK，时间复杂度Nlogk
+- **快排**：趋于线性的复杂度O(N)
+- **堆**：使用大根堆/小根堆对数据排序，K为堆的大小，这样得到TopK，时间复杂度Nlogk
 
 ```java
     public int[] getLeastNumbers(int[] arr, int k) {

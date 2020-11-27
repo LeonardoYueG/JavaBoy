@@ -16,13 +16,13 @@
 输出：-1
 ```
 
-**思路**：旋转数组表示部分有序，有序就可以考虑二分法把时间复杂度变为logN，选择使用二分法，本题通过二分法找到有序区间，找到了有序区间，通过比较target与nums[left]、nums[right]找到目标区间。还需要注意边界收缩的一致性，否则无法跳出循环。
+**思路**：旋转数组表示部分有序，有序就可以考虑二分法把时间复杂度变为logN，选择使用二分法，本题通过二分法找到有序区间，找到了有序区间，通过比较target与nums[left]、nums[right]找到目标区间（本题通过nums[mid]和nums[right]比较划分目标区间）。**还需要注意边界收缩的一致性，否则无法跳出循环。**
 
-**关键**：把比较好些的判断（`target` 落在有序的那部分）放在 `if` 的开头考虑，把剩下的情况放在 `else` 里面。
+**关键**：**把比较好些的判断（`target` 落在有序的那部分）放在 `if` 的开头考虑，把剩下的情况放在 `else` 里面。**
 
-**二分法本质**：找到目标区间，常规二分法通过nums[mid]和target比较划分目标区间，旋转区间通过nums[mid]和nums[right]比较划分目标区间。
+**二分法本质**：找到目标区间，常规二分法通过nums[mid]和target比较划分目标区间。
 
-注意
+**注意**
 
 1.需要注意的是mid的取值
 
@@ -46,8 +46,10 @@
             
             //[mid, right]有序
             if(nums[mid] < nums[right]){
-                //target在[mid, right]
-                //nums[mid + 1] <= target是为了让两个大的if-else中左右边界收缩一致，
+     
+                //target在[mid, right],目的是判断target是否存在
+                
+                //nums[mid + 1] <= target是为了让大的if-else中左右边界收缩一致，
                 //即在其中left = mid + 1和right = mid变化相同
                 //否则当只有两个元素时，不会取到第一个元素，始终left < right，无法跳出循环
                 if(nums[mid + 1] <= target && nums[right] >= target){
@@ -94,7 +96,9 @@
 输出: 0
 ```
 
-思路：有序数组，就要考虑是否二分法能解决，本题使用二分法找到target左边界。1.从左边界依次计算，2.从计算target + 1左边界，如果左边界，两者相减得到数量。
+思路：
+
+有序数组，就要考虑是否二分法能解决，本题使用二分法找到target左边界。1.从左边界依次计算，2.从计算target + 1左边界，如果左边界，两者相减得到数量。
 
 ```java
 	//find the left rang by binarySearch
@@ -179,7 +183,10 @@
 解释: 你需要移除两个 [1,2] 来使剩下的区间没有重叠。
 ```
 
-思路：按照区间的尾坐标进行升序排列，然后从头开始遍历，`intervals[0][1] < end` 表示区间和前一个区间相交，计算最多不相交区间的个数，总数减不相交个数。
+思路：按照区间的**尾坐标**进行升序排列，然后从头开始遍历，`intervals[0][1] < end` 表示区间和前一个区间相交，计算最多不相交区间的个数，总数减不相交个数。
+
+- 不选头坐标的原因：可能开始的很早，但是实际时间很长，导致错过一些中间部分区间。
+- 不选短区间的原因：可能最短区间也会重叠多次
 
 ![image-20201020202017985](image/image-20201020202017985.png)
 
@@ -284,7 +291,7 @@ public int findMinArrowShots(int[][] points) {
 解释: 区间 [1,4] 和 [4,5] 可被视为重叠区间。
 ```
 
-思路：用的是start坐标去排序区间，因为我们要用的是start+end构成新的区间。
+思路：**用的是start坐标去排序区间**，因为我们要用的是start+end构成新的区间。
 
 ```java
 	public int[][] merge(int[][] intervals) {
@@ -324,7 +331,7 @@ public int findMinArrowShots(int[][] points) {
     }
 ```
 
-### 动态规划
+## 动态规划
 
 将暴力计算的方法抛弃，使用空间替代时间的思想，避免重复计算，从而降低时间复杂度。
 
@@ -344,9 +351,9 @@ public int findMinArrowShots(int[][] points) {
 
 **思路：**
 
-1. 动态规划：二进制不同的数可以通过二进制进行关联, eg: 3 (110) 和 7 (1110)二进制仅增加一位1，而两者的十进制也可以相互联系， 避免计算每一个数的每一位二进制位。
+1. **动态规划**：二进制不同的数可以通过二进制进行关联, eg: 3 (110) 和 7 (1110)二进制仅增加一位1，而两者的十进制也可以相互联系， 避免计算每一个数的每一位二进制位。
 
-2. 规律方法：所有数字分为两类：奇数和偶数
+2. **规律方法：**所有数字分为两类：奇数和偶数
 
    奇数：二进制表示中，奇数一定比前面那个偶数多一个 1，因为多的就是最低位的 1；
 
@@ -418,7 +425,7 @@ public int findMinArrowShots(int[][] points) {
 
 思路：
 
-- **动态规划**：注意分清边界和关系，如果s.charAt(i) == ' ) '才能和前面的构成括号，动手画一下看看具体情况，两种情况分别讨论，注意考虑相邻是否有成对括号时，注意 i 的取值范围不能越界。
+- **动态规划**：dp[i]表示在第i个位置，有效括号数，注意分清边界和关系，如果s.charAt(i) == ' ) '才能和前面的构成括号，动手画一下看看具体情况，两种情况分别讨论，注意考虑相邻是否有成对括号时，注意 i 的取值范围不能越界。
   - ‘()()’
   - '()(())'
 - **栈**：看官方解题思路
@@ -436,7 +443,7 @@ public int findMinArrowShots(int[][] points) {
                     dp[i] = i >= 2 ? dp[i-2] + 2 : 2;
                 }
                 else{
-                    //(i - dp[i-1] - 1)当前位置相对应位置,eg:'(())'
+                    //(i - dp[i-1] - 1)为当前位置相对应位置,eg:'(())'
                     if((i - dp[i-1] - 1) >= 0 && s.charAt(i - dp[i-1] - 1) == '('){ 
                         dp[i] = dp[i-1] + 2;
                         //相邻之前的位置‘()(())’
@@ -488,6 +495,10 @@ public int findMinArrowShots(int[][] points) {
 
     }
 ```
+
+
+
+
 
 
 
@@ -573,7 +584,7 @@ public int findMinArrowShots(int[][] points) {
         int len2 = version2.length();
         int startIndex1 = 0;
         int startIndex2 = 0;
-        while(startIndex1 < len1 || startIndex2 < len2){//是 || 不要写成&&了
+        while(startIndex1 < len1 || startIndex2 < len2){//是 || 不要写成&&了，因为见测试用例2
             int num1 = 0;
             int num2 = 0;
             while(startIndex1 < len1 && version1.charAt(startIndex1) != '.'){
@@ -637,9 +648,9 @@ public int findMinArrowShots(int[][] points) {
 
 思路：
 
-动态规划：双层嵌套循环找到，比当前数小的元素个数，dp[i] = max(dp[i], dp[j] + 1); dp[i]>=3返回true。
+**动态规划**：双层嵌套循环找到，比当前数小的元素个数，dp[i] = max(dp[i], dp[j] + 1); dp[i]>=3返回true。
 
-双指针：small, mid保存两个较小数，找出一个同时大于small和mid的数即返回。
+**双指针**：small, mid保存两个较小数，找出一个同时大于small和mid的数即返回。
 
 ```java
     public boolean increasingTriplet(int[] nums) {
@@ -675,7 +686,7 @@ public int findMinArrowShots(int[][] points) {
 ]
 ```
 
-思路：
+**思路**：
 
 提供的数组无序，要找出全部三元组的成本很高，所以选择先排序，先确定一个位置（从左往右遍历），然后确定位置的右边区间的左右位置使用双指针，将问题转化为两数之和了，注意去重操作。
 
@@ -706,12 +717,9 @@ public int findMinArrowShots(int[][] points) {
                 }
                 else if (sum < 0) L++;
                 else if (sum > 0) R--;
-
-
             } 
         }
         return ans;
-
     }
 ```
 
@@ -851,9 +859,10 @@ board =
 
 思路：
 
-层次遍历：取该层最后一个数。
+- 层次遍历：取该层最后一个数。
 
-左视图类似
+- 左视图类似
+
 
 ```java
 	public List<Integer> rightSideView(TreeNode root) {
@@ -905,7 +914,7 @@ board =
 
 思路：
 
-递归
+- **递归**
 
 ```java
     public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
@@ -1078,7 +1087,7 @@ board =
         HashMap<Integer, Integer> map = new HashMap<>();
         int count = 0;
         int preSum  = 0;
-        map.put(0, 1);//对于一开始的情况，下标 0 之前没有元素，可以认为前缀和为 0，个数为 1 个，解决前缀和即为K值的情况
+        map.put(0, 1);//（必须），对于一开始的情况，下标 0 之前没有元素，可以认为前缀和为 0，个数为 1 个，解决前缀和即为K值的情况
         for(int i = 0; i < nums.length; i++){
             preSum += nums[i];
             if(map.containsKey(preSum - k)){
@@ -1088,6 +1097,75 @@ board =
             map.put(preSum, map.getOrDefault(preSum, 0) + 1);
         }
         return count;
+    }
+```
+
+#### [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/)
+
+相关问题：[112. 路径总和](https://leetcode-cn.com/problems/path-sum/)   [113. 路径总和 II](https://leetcode-cn.com/problems/path-sum-ii/)
+
+给定一个二叉树，它的每个结点都存放着一个整数值。
+
+找出路径和等于给定数值的路径总数。
+
+路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
+
+示例：
+
+```html
+root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
+
+	  10
+	 /  \
+	5   -3
+   / \    \
+  3   2   11
+ / \   \
+3  -2   1
+
+返回 3。和等于 8 的路径有:
+
+1.  5 -> 3
+2.  5 -> 2 -> 1
+3.  -3 -> 11
+```
+
+思路：
+
+**暴力：**对每一个节点进行递归
+
+**前缀和：**
+
+- 前缀和定义：到达当前位置路径上，路径上所有元素之和
+- 方法：如果两个节点的前缀总和是相同的，那么这些节点之间的元素总和为零。同样，在节点A和节点B处相差target，则位于节点A和节点B之间的元素之和是target。使用一个map存前缀和方便查询
+
+```java
+    public int pathSum(TreeNode root, int sum) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);//和刚好为sum的
+        return dfs(root, map, sum, 0);    
+    }
+
+    public int dfs(TreeNode root, Map<Integer, Integer> map, int sum, int currSum){
+        if(root == null){
+            return 0;
+        }
+
+        int res = 0;
+        currSum += root.val;
+
+        res += map.getOrDefault(currSum - sum, 0);
+
+        map.put(currSum, map.getOrDefault(currSum, 0) + 1);
+
+        res += dfs(root.left, map, sum, currSum);
+        res += dfs(root.right, map, sum, currSum);
+
+        map.put(currSum, map.get(currSum) - 1); //回溯
+        
+        return res;
     }
 ```
 
@@ -1248,75 +1326,4 @@ board =
 ```
 
 
-
-## 前缀和
-
-#### [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/)
-
-相关问题：[112. 路径总和](https://leetcode-cn.com/problems/path-sum/)   [113. 路径总和 II](https://leetcode-cn.com/problems/path-sum-ii/)
-
-给定一个二叉树，它的每个结点都存放着一个整数值。
-
-找出路径和等于给定数值的路径总数。
-
-路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
-
-二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
-
-示例：
-
-root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
-
-```html
-	  10
-	 /  \
-	5   -3
-   / \    \
-  3   2   11
- / \   \
-3  -2   1
-
-返回 3。和等于 8 的路径有:
-
-1.  5 -> 3
-2.  5 -> 2 -> 1
-3.  -3 -> 11
-```
-
-思路：
-
-**暴力：**对每一个节点进行递归
-
-**前缀和：**
-
-- 前缀和定义：到达当前位置路径上，路径上所有元素之和
-- 方法：如果两个节点的前缀总和是相同的，那么这些节点之间的元素总和为零。同样，在节点A和节点B处相差target，则位于节点A和节点B之间的元素之和是target。使用一个map存前缀和方便查询
-
-```java
-    public int pathSum(TreeNode root, int sum) {
-        HashMap<Integer, Integer> map = new HashMap<>();
-        map.put(0, 1);//和刚好为sum的
-        return dfs(root, map, sum, 0);    
-    }
-
-    public int dfs(TreeNode root, Map<Integer, Integer> map, int sum, int currSum){
-        if(root == null){
-            return 0;
-        }
-
-        int res = 0;
-        currSum += root.val;
-
-        res += map.getOrDefault(currSum - sum, 0);
-
-        map.put(currSum, map.getOrDefault(currSum, 0) + 1);
-
-        res += dfs(root.left, map, sum, currSum);
-        res += dfs(root.right, map, sum, currSum);
-
-        map.put(currSum, map.get(currSum) - 1); //回溯
-        
-        return res;
-    }
-```
 
