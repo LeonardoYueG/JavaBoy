@@ -1,5 +1,3 @@
-
-
 #### [03. 数组中重复的数字](https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/)
 
 找出数组中重复的数字。
@@ -13,7 +11,11 @@
 输出：2 或 3 
 ```
 
-思路：关键点长度为n，所有数字都在0~n-1的范围内，将遍历的数字i交换到第i个位置，出现冲突则重复。时间复杂度：O(n)，空间复杂度：O(1)
+**思路**
+
+关键点长度为n，所有数字都在0~n-1的范围内，将遍历的数字i交换到第i个位置，出现冲突则重复。
+
+时间复杂度：O(n)，空间复杂度：O(1)
 
 错误思路：把遍历过的数字记录下来，用位置去记录（把遍历到的数字作为索引，将该位置的数只为负值，表示该数已经出现，如果出现索引位置数已经为负值时，表示该数重复）。但是该方法**无法处理0重复**的情况。
 
@@ -33,8 +35,7 @@ public int findRepeatNumber(int[] nums){
         }
         
     }
-    return -1;
-    
+    return -1;    
 }
 
 public void swap(int[] nums, int i , int j){
@@ -66,7 +67,11 @@ public void swap(int[] nums, int i , int j){
 给定 target = 20，返回 false。
 ```
 
-思路：从左到右和从上到下是有序的，选择从从左下或者从右上开始比对，除了等于每次大于小于排除部分数据，改变移动方向，最终越界则未找到。时间复杂度：O(M + N)，空间复杂度：O(1)
+**思路**：
+
+从左到右和从上到下是有序的，选择从从左下或者从右上开始比对，除了等于每次大于小于排除部分数据，改变移动方向，最终越界则未找到。
+
+时间复杂度：O(M + N)，空间复杂度：O(1)
 
 ```java
 public boolean findNumberIn2DArray(int[][] matrix, int target) {
@@ -103,7 +108,11 @@ public boolean findNumberIn2DArray(int[][] matrix, int target) {
 输出："We%20are%20happy."
 ```
 
-思路：创建一个StringBuilder  str，遍历s，如果i位置是字符则直接添加到str，是空格则添加"%20"。时间复杂度：O(N)，空间复杂度：O(N)
+思路：
+
+创建一个StringBuilder  str，遍历s，如果i位置是字符则直接添加到str，是空格则添加"%20"。
+
+时间复杂度：O(N)，空间复杂度：O(N)
 
 ```java
 public String replaceSpace(String s) {
@@ -176,7 +185,11 @@ public int[] reversePrint(ListNode head) {
     /  \
    15   7
 ```
-思路：与手动推倒二叉树是一致的，通过前序或者后续的根节点去分割中序二叉树，做递归，生成子树，为了更好的找到中序的根节点，使用HashMap<value, index>将数据进行存储，方便快速查找。时间复杂度：O(N)，空间复杂度：O(N)
+**思路：**
+
+与手动推倒二叉树是一致的，通过前序或者后续的根节点去分割中序二叉树，做递归，生成子树，为了更好的找到中序的根节点，使用HashMap<value, index>将数据进行存储，方便快速查找。
+
+时间复杂度：O(N)，空间复杂度：O(N)
 
 此题已知前序和中序推导后续思路是一致的。
 
@@ -189,6 +202,7 @@ public TreeNode buildTree(int[] preorder, int[] inorder) {
     }
     return buildTree(preorder, 0, len - 1, inorder, 0, len - 1);
 }
+
 public TreeNode buildTree(int[] pre, int preStart, int preEnd, int[] in, int inStart, int inEnd){
     //不能是 ">=" ，"="则无法输出叶子节点
     if(preStart > preEnd){
@@ -200,15 +214,14 @@ public TreeNode buildTree(int[] pre, int preStart, int preEnd, int[] in, int inS
     TreeNode root =  new TreeNode(preRoot); //build the root of tree
     root.left = buildTree(pre, preStart + 1, preStart + leftChildSize, in, inStart, inRoot - 1);
     root.right = buildTree(pre, preStart + leftChildSize + 1, preEnd, in, inRoot + 1, inEnd);
-    return root;
-    
+    return root; 
 }
 ```
 
 **已知前序和中序，输出后续**
 
 ```java
-static HashMap<Character, Integer> map = new HashMap<>();
+	static HashMap<Character, Integer> map = new HashMap<>();
 
     public static void main(String[] args) {
         String preStr = "GDAFEMHZ";
@@ -240,7 +253,9 @@ static HashMap<Character, Integer> map = new HashMap<>();
 
 #### [09. 用两个栈实现队列](https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)
 
-思路：队列是先入先出，栈是先入后出，所以用两个栈将数据进行反转，得到数据的输入输出顺序就是先入先出
+思路：
+
+队列是先入先出，栈是先入后出，所以用两个栈将数据进行反转，得到数据的输入输出顺序就是先入先出。
 
 pushStack栈将数据”倒入“popStack时遵循两个原则：1.popStack为空时才能倒出，2.一次性“倒出”pushStack全部数据。
 
@@ -378,27 +393,27 @@ public int fib(int n) {
 
 #### [11. 旋转数组的最小数字](https://leetcode-cn.com/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/)
 
-把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。输入一个递增排序的数组的一个旋转，输出旋转数组的最小元素。例如，数组 [3,4,5,1,2] 为 [1,2,3,4,5] 的一个旋转，该数组的最小值为1。  
+把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。输入一个递增排序的数组的一个旋转，输出旋转数组的最小元素。例如，数组 [3,4,5,1,2] 为 [1,2,3,4,5] 的一个旋转，该数组的最小值为1。
 
-示例 1：
+示例 ：
 
 ```html
 输入：[3,4,5,1,2]
 输出：1
-```
 
-示例 2：
-
-```html
 输入：[2,2,2,0,1]
 输出：0
 ```
 
-思路：旋转后依部分有序，通过二分法进行查找，mid与right进行比较。时间复杂度：O(logN)，空间复杂度：O(1)
+**思路**
+
+旋转后依部分有序，通过二分法进行查找，mid与right进行比较。
+
+时间复杂度：O(log N)，空间复杂度：O(1)
 
 - nums[mid] < nums[right]，目标值在[left，mid - 1]内；
 - nums[mid] > nums[right]，目标值在[mid + 1, right]内；
-- nums[mid] == nums[right]，不确定目标值在那个范围，所以减小区间 right= right- 1（保证了目标值还在[left, right]中），证明见leetcode。
+- **nums[mid] == nums[right]**，不确定目标值在那个范围，所以减小区间 right= right- 1（保证了目标值还在[left, right]中），证明见leetcode。
 
 为什么不使用nums[left]与nums[mid]比较，因为当nums[left] < nums[mid]时无法确定目标值在那个区间。
 
@@ -422,7 +437,6 @@ public int fib(int n) {
             }else{
                 right--;
             }
-
         }
         return nums[left];
      }
@@ -495,7 +509,9 @@ public int fib(int n) {
 
 例如，当 k 为 18 时，机器人能够进入方格 (35,37)，因为 3+5+3+7=18。但是，它不能进入方格 (35,38)，因为 3+5+3+8=19。请问该机器人能够达到多少个格子？
 
-思路：深度优先遍历DFS，不要当前位置每一位数，当前位置是可以通过前一个位置计算的。
+**思路**
+
+深度优先遍历DFS，不要当前位置每一位数，当前位置是可以通过前一个位置计算的。
 
 - 深度优先搜索： 可以理解为暴力法模拟机器人在矩阵中的所有路径。DFS 通过递归，先朝一个方向搜到底，再回溯至上个节点，沿另一个方向搜索，以此类推；
 - 剪枝： 在搜索中，遇到数位和超出目标值、此元素已访问，则应立即返回。
@@ -530,7 +546,9 @@ public int fib(int n) {
 解释: 2 = 1 + 1, 1 × 1 = 1
 ```
 
-思路：这儿需要知道一个大前提：一个数切分为尽可能多的“3”时，其乘积有最大值，严格证明需要数学推导。同时出现1的时候，取出一个3，变为2*2。
+**思路**
+
+这儿需要知道一个大前提：一个数切分为尽可能多的“3”时，其乘积有最大值，严格证明需要数学推导。同时出现1的时候，取出一个3，变为2*2。
 
 ```java
 	public int cuttingRope(int n) {
@@ -555,9 +573,11 @@ public int fib(int n) {
 
 题目同上，主要是N值过大，乘积超出int取值范围，甚至long范围。
 
-思路：主要考察大数求余（循环求余，快速求余（推荐））。
+**思路：**
 
-快速求余：
+主要考察大数求余（循环求余，快速求余（推荐））
+
+**快速求余**：
 
 ![image-20201018115306281](image/image-20201018115306281.png)
 
@@ -595,7 +615,9 @@ public int fib(int n) {
 
 ```
 
-思路：不要考虑手动一位一位的计算，位运算很多时候很有用处。
+**思路**
+
+不要考虑手动一位一位的计算，位运算很多时候很有用处。
 
 1.逐位判断（基础）：
 
@@ -648,7 +670,9 @@ public int fib(int n) {
 解释: 2-2 = 1/22 = 1/4 = 0.25
 ```
 
-思路：仍然是快速求余幂指数算法，大数问题用double类型解决。
+**思路**
+
+仍然是快速求余幂指数算法，大数问题用double类型解决。
 
 ![img](image/48b1d459-8832-4e92-938a-728aae730739.jpg)
 
@@ -709,7 +733,9 @@ public int fib(int n) {
 解释: 给定你链表中值为 5 的第二个节点，那么在调用了你的函数之后，该链表应变为 4 -> 1 -> 9.
 ```
 
-思路：找到删除节点的前一个节点，如果不用两个节点，则需要考虑如果删除的是最后一个节点，节点移动需要注意一下。
+**思路**
+
+找到删除节点的前一个节点，如果不用两个节点，则需要考虑如果删除的是最后一个节点，节点移动需要注意一下。
 
 ```java
 	public ListNode deleteNode(ListNode head, int val) {
@@ -825,8 +851,8 @@ p = "a*"
 
 **思路：**
 
-- ~~两次遍历：先遍历整个链表长度，计算出倒数第K个的位置~~
-- 快慢指针：快指针比慢指针快K步，快指针到达最后的位置，慢指针为倒数第K个位置
+- 两次遍历：先遍历整个链表长度，计算出倒数第K个的位置
+- **快慢指针**：快指针比慢指针快K步，快指针到达最后的位置，慢指针为倒数第K个位置
 
 ```java
 	public ListNode getKthFromEnd(ListNode head, int k) {
@@ -950,8 +976,8 @@ p = "a*"
 
 **思路：**
 
-- ~~遍历：将结果遍历出来，然后看B的结果是不是A的连续子串~~
-- 递归：从root节点开始遍历，如果两个节点相同，判断其子结构也完全相同
+- 遍历：将结果遍历出来，然后看B的结果是不是A的连续子串
+- **递归**：从root节点开始遍历，如果两个节点相同，判断其子结构也完全相同
 
 ```java
 	public boolean isSubStructure(TreeNode A, TreeNode B) {
@@ -1035,7 +1061,7 @@ p = "a*"
   / \
   2   2
    \   \
-   3    3
+    3   3
 ```
 **思路：**
 
@@ -1056,7 +1082,7 @@ p = "a*"
         return p.val == q.val && check(p.left, q.right) && check(p.right, q.left);
     }
 
-    //这样就错了，成了判断子树是否对称了
+    // 这样就错了，成了判断子树是否对称了
     // public boolean isSymmetric(TreeNode root) {
     //     if(root.left == null && root.right == null){
     //         return true;
@@ -1149,7 +1175,7 @@ p = "a*"
 **思路：**
 
 - 辅助栈：用辅助栈存每一个位置上最小值。空间复杂度O(N)，时间复杂度O(1);
-- 辅助数：用变量存当前最小值，当出现比当前变量小的数时，将之前变量压入栈中，更新最小变量，当弹出值等于最小值时，返回再弹出一个数，该数为当前最小值。空间复杂度O(1)，时间复杂度O(1);
+- **辅助数**：用变量存当前最小值，当出现比当前变量小的数时，将之前变量压入栈中，更新最小变量，当弹出值等于最小值时，返回再弹出一个数，该数为当前最小值。空间复杂度O(1)，时间复杂度O(1);
 
 ```java
 public class MinStack {
@@ -1578,7 +1604,7 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 
 问题的核心：如果找到复制后的节点，把他们链接起来。
 
-- hashmap：将原节点和复制节点视为<key, value>，通过key，查找value
+- HashMap：将原节点和复制节点视为<key, value>，通过key，查找value
 - 插入法：将复制后的节点放在原节点之后，这样就可以通过原节点找到复制后的节点
 
 ```java
@@ -1698,7 +1724,7 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
 
 
     }
-    public static TreeNode rec(Queue<String> queue){
+    public TreeNode rec(Queue<String> queue){
         String value = queue.poll();
         if(value.equals("#")){
             return null;
@@ -1813,8 +1839,6 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
     //     for(int num : nums)
     //         if(num == x) count++;
     //     return count > nums.length / 2 ? x : 0; // 当无众数时返回 0
-
-
     // }
         
 
@@ -1845,12 +1869,9 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
         int j = right;
         int value = nums[left];
         while(i < j){
-            while(nums[j] >= value && i < j) j--;
-            while(nums[i] <= value && i < j) i++;
-
-            if(i < j){
-                swap(nums, i, j);
-            }
+            while(i < j && nums[j] >= value) j--;
+            while(i < j && nums[i] <= value) i++;
+            swap(nums, i, j);
         }
         swap(nums, i, left);
         return i;
@@ -1859,8 +1880,7 @@ push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
     public static void swap(int[] nums, int a, int b){
         int tmp = nums[a];
         nums[a] = nums[b];
-        nums[b] = tmp;
-        
+        nums[b] = tmp;        
     }
 ```
 
@@ -1940,13 +1960,13 @@ TopK的问题。
 [2,3] 的中位数是 (2 + 3) / 2 = 2.5
 ```
 
-思路：
+**思路**
 
-将数据插入到一个有序列表中，然后去查询中位数。
+**将数据插入到一个有序列表中，然后去查询中位数。**
 
 为了优化有序列表和中位数查询，使用堆结构构成有序列表，同时为了减少查询的时间复杂度，使用两个堆（小根堆存较大部分，大根堆存较小部分），两个堆形成一个有序集合
 
-细节：总个数为奇数时，小根堆多存一个。
+**细节**：总个数为奇数时，小根堆多存一个。
 
 插入：
 
@@ -2095,7 +2115,7 @@ TopK的问题。
 输出: "3033459"
 ```
 
-思路：
+**思路：**
 
 本质是一个排序问题，但是我们比较的是(str[i] + str[j]) 与(str[j] + str[i])进行比较，所以将数字转化为字符串然后排序，最后拼接即可。
 
@@ -2314,7 +2334,9 @@ TopK的问题。
 解释: 1, 2, 3, 4, 5, 6, 8, 9, 10, 12 是前 10 个丑数。
 ```
 
-思路：大丑数是根据小的丑数* 2/3/5来的，所以我们使用三个指针去依次遍历
+思路
+
+大丑数是根据小的丑数* 2/3/5来的，所以我们使用三个指针去依次遍历
 
 ```java
 	public int nthUglyNumber(int n) {
@@ -2614,11 +2636,12 @@ s = ""
   9  20
     /  \
    15   7
+返回它的最大深度 3 
 ```
 
 思路：
 
-递归：从最底层开始递归，每次返回两个节点中最大深度的值
+递归：从最底层开始递归，每次返回两个孩子节点中最大深度的值
 
 ```java
 	public int maxDepth(TreeNode root) {
@@ -2628,10 +2651,10 @@ s = ""
         int left = 0;
         int right = 0;
         if(root.left != null){
-        left = maxDepth(root.left);
+        	left = maxDepth(root.left);
         }
         if(root.right != null){
-        right = maxDepth(root.right);
+        	right = maxDepth(root.right);
         }
         return Math.max(left, right) + 1;
     }
@@ -2820,7 +2843,6 @@ s = ""
             }
         }
         return res;
-
     }
 ```
 
@@ -3213,10 +3235,11 @@ substring()函数的使用
         //看那个上下三角形
         if(a.length == 0) return new int[0];//不判断会出现越界的情况
         res[0] = 1;
-        int tmp = 1;
         for(int i = 1; i < a.length; i++){
             res[i] = res[i-1] * a[i-1];// *a[i-1]就是将第i个数抛弃了
         }
+        
+        int tmp = 1;
         for(int i = a.length - 2; i >= 0; i--){
             tmp *= a[i+1];
             res[i] *= tmp;  
@@ -3252,7 +3275,7 @@ substring()函数的使用
 
 #### [68 - I. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
 
-给定一个二叉搜索树, 找到该树中两个指定节点的**最近**公共祖先。
+给定一个**二叉搜索树**, 找到该树中两个指定节点的**最近**公共祖先。
 
 示例：
 

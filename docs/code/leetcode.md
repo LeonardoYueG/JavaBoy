@@ -78,10 +78,6 @@
 
 
 
-
-
-
-
 #### [剑指 Offer 53 - I. 在排序数组中查找数字 I](https://leetcode-cn.com/problems/zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof/)
 
 统计一个数字在排序数组中出现的次数。
@@ -230,7 +226,9 @@
 解释:对于该样例，我们可以在x = 6（射爆[2,8],[1,6]两个气球）和 x = 11（射爆另外两个气球）。
 ```
 
-思路：贪心思想，先排序，然后从头开始遍历，每次都让一只箭射爆最多的气球（当前end坐标与第i个气球的start坐标比较）
+思路：
+
+贪心思想，先排序，然后从头开始遍历，每次都让一只箭射爆最多的气球（当前end坐标与第i个气球的start坐标比较）
 
 ```java
 public int findMinArrowShots(int[][] points) {
@@ -952,7 +950,7 @@ board =
 
 思路：
 
-正向暴力递归时间复杂度太高，因此可以想从后往前遍历，通过我们可以通过保存比前面节点大的信息，通过为了保存比当前大的，不是之后最大的，我们可以选用单调栈的方式
+正向暴力递归时间复杂度太高，因此可以想从后往前遍历，通过我们可以通过保存比前面节点大的信息，通过为了保存比当前大的，不是之后最大的，我们可以选用单调栈的方式。本题选择从底到上单调递减的栈
 
 ```java
 //错误方法：
@@ -1144,7 +1142,7 @@ root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
 ```java
     public int pathSum(TreeNode root, int sum) {
         HashMap<Integer, Integer> map = new HashMap<>();
-        map.put(0, 1);//和刚好为sum的
+        map.put(0, 1);//和刚好为sum的，为了找到从根节点出发满足路径之和的
         return dfs(root, map, sum, 0);    
     }
 
@@ -1153,7 +1151,7 @@ root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
             return 0;
         }
 
-        int res = 0;
+        int res = 0;//出现的次数
         currSum += root.val;
 
         res += map.getOrDefault(currSum - sum, 0);
@@ -1177,7 +1175,7 @@ root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
 
 #### [1. 两数之和](https://leetcode-cn.com/problems/two-sum/)
 
-给定一个整数数组 `nums` 和一个目标值 `target`，请你在该数组中找出和为目标值的那 **两个** 整数，并返回他们的数组下标。
+给定一个无序整数数组 `nums` 和一个目标值 `target`，请你在该数组中找出和为目标值的那 **两个** 整数，并返回他们的数组下标。
 
 示例:
 
@@ -1191,6 +1189,8 @@ root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
 思路：
 
 字典法：使用一个hashmap<num[i], i>储存所有数，通过target - map.get(i)判断对象是否存在，**注意判断语句要放在map.put()之前。**
+
+有序数组直接使用双指针
 
 ```java
     public int[] twoSum(int[] nums, int target) {
@@ -1326,4 +1326,184 @@ root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
 ```
 
 
+
+链表
+
+#### [25. K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
+
+给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+
+k 是一个正整数，它的值小于或等于链表的长度。
+
+如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+
+```html
+给你这个链表：1->2->3->4->5
+
+当 k = 2 时，应当返回: 2->1->4->3->5
+
+当 k = 3 时，应当返回: 3->2->1->4->5
+```
+
+
+
+```java
+public ListNode reverseKGroup(ListNode head, int k) {
+    ListNode dummy = new ListNode(0);
+    dummy.next = head;
+
+    ListNode pre = dummy;
+    ListNode end = dummy;
+
+    while (end.next != null) {
+        for (int i = 0; i < k && end != null; i++) end = end.next;
+        if (end == null) break;
+        
+        ListNode start = pre.next;
+        ListNode next = end.next;
+        end.next = null;
+        
+        pre.next = reverse(start);
+        start.next = next;
+        pre = start;
+
+        end = pre;
+    }
+    return dummy.next;
+}
+
+private ListNode reverse(ListNode head) {
+    ListNode pre = null;
+    ListNode curr = head;
+    while (curr != null) {
+        ListNode next = curr.next;
+        curr.next = pre;
+        pre = curr;
+        curr = next;
+    }
+    return pre;
+}
+
+```
+
+
+
+
+
+#### [146. LRU 缓存机制](https://leetcode-cn.com/problems/lru-cache/)
+
+运用你所掌握的数据结构，设计和实现一个  LRU (最近最少使用) 缓存机制 。
+实现 LRUCache 类：
+
+LRUCache(int capacity) 以正整数作为容量 capacity 初始化 LRU 缓存
+int get(int key) 如果关键字 key 存在于缓存中，则返回关键字的值，否则返回 -1 。
+void put(int key, int value) 如果关键字已经存在，则变更其数据值；如果关键字不存在，则插入该组「关键字-值」。当缓存容量达到上限时，它应该在写入新数据之前删除最久未使用的数据值，从而为新的数据值留出空间。
+
+
+进阶：你是否可以在 O(1) 时间复杂度内完成这两种操作？
+
+```java
+class LRUCache {
+    class DLinkNode{
+        int key;
+        int value;
+        DLinkNode pre;
+        DLinkNode next;
+        public DLinkNode(){}
+        public DLinkNode(int key, int value){this.key = key; this.value = value;}
+    }
+    //这儿的实现不是HashMap的那种拉链法  hashMap是个一个key 为Int  value 为DLinkNode的Map
+    //只是我们把LinkNode有序了
+    private HashMap<Integer, DLinkNode> cache = new HashMap<Integer, DLinkNode>();
+    private int size;
+    private int capacity;
+    private DLinkNode head, tail;
+
+    public LRUCache(int capacity) {
+        this.size = 0;
+        this.capacity = capacity;
+        head = new DLinkNode();
+        tail = new DLinkNode();
+        //这儿头部和尾部都是伪的
+        //这两个参数很重要
+        head.next = tail;
+        tail.pre = head;
+
+    }
+    
+    public int get(int key) {
+        DLinkNode node = cache.get(key);
+        if(node == null){
+            return -1;
+        }
+        moveToHead(node);
+        return node.value;
+
+    }
+    
+    public void put(int key, int value) {
+        DLinkNode node = cache.get(key);
+        if(node != null){
+            node.value = value;
+            moveToHead(node);
+            //removeNode(node);
+            //moveToHead(new DLinkNode(key ,value));  
+        }
+        else{
+            DLinkNode newNode = new DLinkNode(key, value);
+            // 需要先添加进HashMap
+            cache.put(key, newNode);
+            addToHead(newNode);
+            size++;
+            if(size > capacity){
+                DLinkNode realTail = romoveTail();
+                //这儿容易忘还要移除HashMap里面的值
+                cache.remove(realTail.key);
+                size--;
+
+            }
+
+
+            // addToHead(new DLinkNode(key ,value));
+            // size++;
+            // if(size > capacity){
+            //     romoveTail();
+            // }
+        }
+
+    }
+    //这四个函数用的好
+    public void addToHead(DLinkNode node){
+        //把他插到head的后面
+
+        //插入两个节点中间，修改四个指针
+        node.next = head.next;
+        node.pre = head;
+
+        head.next.pre = node;
+        head.next = node;
+
+    }
+    //移除节点
+    public void removeNode(DLinkNode node){
+        node.pre.next = node.next;
+        node.next.pre = node.pre;
+    }
+
+    //移动到头节点
+    public void moveToHead(DLinkNode node){
+        removeNode(node);
+        addToHead(node);
+    }
+
+    //删除尾节点
+    public DLinkNode romoveTail(){
+        //tail始终指的是Null
+        DLinkNode res = tail.pre;
+        //移除之后tail自动前移了
+        removeNode(res);
+        return res;
+    }
+}
+```
 
