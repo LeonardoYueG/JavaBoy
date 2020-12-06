@@ -36,11 +36,7 @@ protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
 ![img](http://upload-images.jianshu.io/upload_images/3985563-d3bf0905aeb8719b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-MeasureSpec由两部分组成，一部分是测量模式，另一部分是测量的尺寸大小。
-
-wrap_content: 和自身内容一样的长度。
-
-match_parent: 和父组件一样的长度。
+MeasureSpec由两部分组成，一部分是**测量模式**，另一部分是**测量的尺寸大小**。
 
 其中，Mode模式共分为三类
 
@@ -50,13 +46,17 @@ match_parent: 和父组件一样的长度。
 
 **那么MeasureSpec又是如何确定的？**
 
-- 对于DecorView，其确定是通过屏幕的大小，和自身的布局参数LayoutParams。
+- 对于DecorView，其确定是通过**屏幕的大小**，和**自身的布局参数LayoutParams**。
+  
   - 这部分很简单，根据LayoutParams的布局格式（match_parent，wrap_content或指定大小），将自身大小，和屏幕大小相比，设置一个不超过屏幕大小的宽高，以及对应模式。
-- 对于其他View（包括ViewGroup），其确定是通过父布局的MeasureSpec和自身的布局参数LayoutParams。
+  
+  - wrap_content: 和自身内容一样的长度。
+  
+    match_parent: 和父组件一样的长度。
+  
+- 对于其他View（包括ViewGroup），其确定是通过**父布局的MeasureSpec**和**自身的布局参数LayoutParams**。
 
-
-
-这部分比较复杂。以下列图表表示不同的情况：
+  - 这部分比较复杂。以下列图表表示不同的情况：
 
 ![img](image/3985563-e3f20c6662effb7b.png)
 

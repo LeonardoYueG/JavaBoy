@@ -137,12 +137,12 @@
 
 ### 2.2 onTouchEvent()
 
-| 属性     | 介绍                                     |
-| :------- | :--------------------------------------- |
-| 使用对象 | Activity、ViewGroup、View                |
-| 作用     | 处理点击事件                             |
-| 调用时刻 | 在dispatchTouchEvent()内部调用           |
-| 返回结果 | 是否消费（处理）当前事件，详细情况如下： |
+| 属性     | 介绍                                   |
+| :------- | :------------------------------------- |
+| 使用对象 | Activity、ViewGroup、View              |
+| 作用     | 处理点击事件                           |
+| 调用时刻 | 在dispatchTouchEvent()内部调用         |
+| 返回结果 | 是否消费（处理）当前事件，详细情况如下 |
 
 > 与dispatchTouchEvent()类似
 
@@ -295,9 +295,9 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
 
 - DOWN事件传递到C的onTouchEvent方法，返回了true。
 
-- 在后续到来的MOVE事件，B的onInterceptTouchEvent方法返回true拦截该MOVE事件，但该事件并没有传递给B；这个MOVE事件将会被系统变成一个CANCEL事件传递给C的onTouchEvent方法
+- 在后续到来的MOVE事件，B的onInterceptTouchEvent方法返回true拦截该MOVE事件，但该事件并没有传递给B；**这个MOVE事件将会被系统变成一个CANCEL事件传递给C的onTouchEvent方法**
 
-- 后续又来了一个MOVE事件，该MOVE事件才会直接传递给B的onTouchEvent()
+- **后续又来了一个MOVE事件，该MOVE事件才会直接传递给B的onTouchEvent()**
 
   > 1. 后续事件将直接传递给B的onTouchEvent()处理
   > 2. 后续事件将不会再传递给B的onInterceptTouchEvent方法，该方法一旦返回一次true，就再也不会被调用了。
