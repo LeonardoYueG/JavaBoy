@@ -668,3 +668,112 @@ HashMap put方法的流程是什么？
 4).**判断是否已经存在键为key的键值对**，如果存在则更新键值对的value;
 
 5).**插入键值对**：**1.判断size是否超过threshold**，超过则需要扩容（2*oldCapacity，让表尽量大，降低查询代价，扩容是把oldTable的所有键值对插入newTable中，代价很高，从新计算index的时候对oldIndex进行位计算，降低成本），**2.使用头插法插入新节点**。
+
+
+
+
+
+**ConcurrentHashMap的size()方法是如何计算的？**
+
+1）每个segment的count 变量表示Segment 中的键值对个数；
+
+2）遍历所有segment， 累加count；
+
+3）执行 size（）时先尝试不加锁，如果连续两次不加锁操作得到的结果一致（两次modCount（也是每个segment的累加）是否发生改变），那么可以认为这个结果是正确的。
+
+4）如果尝试的次数超过 3 次，就需要对每个 segment加锁，再计算，结束要依次释放锁。
+
+**ConcurrentHashMap在JDK1.7和1.8的实现分别是什么?**
+
+JDK1.7数据结构是由一个segment数组和多个HashEntry组成，默认16个segment（所以并发也是16），需要hash两次（分了两级）。
+
+![img](image/1-2033999443.png)
+
+JDK1.7使用分段锁机制来实现并发更新操作，核心类为segment，它继承自重入锁ReentrantLock，并发度与segment数量相等。
+
+JDK1.8直接用Node数组+链表（红黑树）的数据结构,和HashMap比较像，
+
+![img](image/2-1171090777.png)
+
+JDK1.8使用了CAS操作来支持更高的并发度，在CAS操作失败时使用内置锁synchronized。
+
+JDK1.8的实现也在链表过长（>8）时会转换为红黑树。
+
+**synchronize与Reentrantlock有什么区别？**
+
+\1. 锁的实现
+
+synchronized 是 JVM 实现的，而 ReentrantLock 是 JDK 实现的。
+
+\2. 性能
+
+新版本 Java 对 synchronized 进行了很多优化，例如自旋锁等,synchronized 与 ReentrantLock 大致相同。
+
+\3. 等待可中断
+
+当持有锁的线程长期不释放锁的时候，正在等待的线程可以选择放弃等待，改为处理其他事情。
+
+ReentrantLock 可中断，而 synchronized 不行。
+
+**两个都可中断**：
+
+synchronized的不可中断指的是在获取锁的过程不能中断，获取之后能中断，因为interrupt()，只是将中断标志位置为true, 但是并没有立刻要求中断线程，只是在sleep,wait,join方法中，都会检查标志位，如果检查中断位为抛出中断异常，在处于轻量级自旋或者重量级锁阻塞获取锁的过程中不会判断中断位。
+
+ReentrantLock在获取锁过程中也能中断，但需要使用lockInterruptiby()获取锁，获取锁时也会判断中断位（首次获取 + 自旋获取都会判断）。
+
+\4. 公平锁
+
+公平锁是指多个线程在等待同一个锁时，必须按照申请锁的时间顺序来依次获得锁（看是否是同步队列的头结点）。
+
+synchronized 中的锁是非公平的，ReentrantLock 默认情况下也是非公平的，但是也可以是公平的。
+
+\5. 锁绑定多个条件
+
+一个 ReentrantLock 可以同时绑定多个 Condition 对象。
+
+**Java中如何正常终止线程？**
+
+两种方法：volatile变量和interrupt()
+
+1.volatile变量：设置一个boolean volatile变量，作为while循环的判断条件，实现线程是否终止；
+
+2.interrupt()：通过调用一个线程的 interrupt() 来中断该线程，如果该线程处于阻塞、限期等待或者无限期等待状态，那么就会抛出 InterruptedException，从而提前结束该线程。但是不能中断 I/O 阻塞和 synchronized 锁阻塞。
+
+interrupt()只是把中断位置为true，如果一个线程一直在执行，那么即使中断了也无效，所以和1类似，使用 interrupted()作为while的循环条件，判断while是否循环下去。
+
+**主线程可以捕获子线程抛出的异常吗？**
+
+不能，设计的主要初衷是线程运行是互相独立的，可以理解主线程也是一种普通的线程即可。如果线程之间异常互相干扰，那么1000个线程，一个线程挂了，其它线程跟着遭殃，这是不合理的。所有的线程中的checked异常都只能被线程本身消化掉。
+
+使用线程池时，execute方法,可以看异常输出在控制台，而submit在控制台没有直接输出，必须调用Future.get()方法时，可以捕获到异常。
+
+线程不是被回收而是线程池把这个线程移除掉，同时创建一个新的线程放到线程池中。
+
+**主线程结束与子线程结束有关吗？**
+
+主线程和子线程结束没有关系（主线程和子线程是平级关系），可以理解Main主线程也是一种普通的线程即可，只是其他线程由主线程启动而已，只要进程和资源还在进程依然执行。
+
+如何查看某个Java进程有几个子线程？
+
+https://blog.csdn.net/qq_18298439/article/details/82289009
+
+1.jps -lvm 用于查看当前机器上运行的java进程。
+
+![img](image/clipboard.png)
+
+2.top -Hp pid可以查看某个进程的线程信息：-H 显示线程信息，-p指定pid
+
+![img](image/clipboard.png)
+
+3.查看此进程下线程的堆栈信息: jstack -l pid
+
+**sleep()与wait()的区别**
+
+- wait() 是 Object 的方法，而 sleep() 是 Thread 的静态方法；
+- wait() 会释放锁，sleep() 不会；
+- wait()必须在同步方法或同步代码块执行，sleep可以使用在任何代码块；
+- wait()不需要需要唤醒，sleep()不需要唤醒；
+
+**一个线程可以start两次吗？**
+
+线程两次调用start()方法会抛出IllegalThreadStateException，这是一种运行时异常。

@@ -145,7 +145,7 @@ CONNECT www.example.com:443 HTTP/1.1
 
 -   **303 See Other**  ：和 302 有着相同的功能，但是 303 明确要求客户端应该采用 GET 方法获取资源。
 
--   注：虽然 HTTP 协议规定 301、302 状态下重定向时不允许把 POST 方法改成 GET 方法，但是大多数浏览器都会在 301、302 和 303 状态下的重定向把 POST 方法改成 GET 方法。
+    -   注：虽然 HTTP 协议规定 301、302 状态下重定向时不允许把 POST 方法改成 GET 方法，但是大多数浏览器都会在 301、302 和 303 状态下的重定向把 POST 方法改成 GET 方法。
 
 -   **304 Not Modified**  ：如果请求报文首部包含一些条件，例如：If-Match，If-Modified-Since，If-None-Match，If-Range，If-Unmodified-Since，如果不满足条件，则服务器会返回 304 状态码。
 
@@ -165,7 +165,15 @@ CONNECT www.example.com:443 HTTP/1.1
 
 -   **500 Internal Server Error**  ：服务器正在执行请求时发生错误。
 
--   **503 Service Unavailable**  ：服务器暂时处于超负载或正在进行停机维护，现在无法处理请求。
+-   501（尚未实施）服务器不具备完成请求的功能。例如，服务器无法识别请求方法时可能会返回此代码。
+
+-   502（错误网关）服务器作为网关或代理，从上游服务器收到无效响应。
+
+- **503 Service Unavailable**  ：服务器暂时处于超负载或正在进行停机维护，现在无法处理请求。
+
+  
+
+  
 
 # 四、HTTP 首部
 
@@ -523,7 +531,7 @@ Accept-Ranges: bytes
 
 ### 3. 响应状态码
 
-- 在请求成功的情况下，服务器会返回 206 Partial Content 状态码。
+- 在请求成功的情况下，服务器会返回 260 Partial Content 状态码。
 - 在请求的范围越界的情况下，服务器会返回 416 Requested Range Not Satisfiable 状态码。
 - 在不支持范围请求的情况下，服务器会返回 200 OK 状态码。
 
@@ -680,6 +688,10 @@ Tips：HASH算法用于验证数据的完整性, Hash值一般都是加密后（
 
 
 
+CA防止中间人攻击
+
+不重数防止重放攻击
+
 ## 为什么对称加密比非对称加密快？
 
 对称加密：主要的运算是位运算比较简单，例如：AES
@@ -752,13 +764,14 @@ http3是一个正在制定中的协议, 基于QUIC协议实现的HTTP通信协�
 
 # 九、GET 和 POST 比较
 
+- 通常GET 用于获取资源，而 POST 用于传输实体主体。
+- 两者都不安全
 - GET在浏览器回退时是无害的，而POST会再次提交请求。
-- GET产生的URL地址可以被Bookmark，而POST不可以。
 - GET请求会被浏览器主动cache，而POST不会，除非手动设置。
-- GET请求只能进行url编码，而POST支持多种编码方式。
 - GET请求参数会被完整保留在浏览器历史记录里，而POST中的参数不会被保留。
 - GET请求在URL中传送的参数是有长度限制的，而POST没有。
 - 对参数的数据类型，GET只接受ASCII字符，而POST没有限制。
+- GET请求只能进行url编码，而POST支持多种编码方式。
 - **GET产生一个TCP数据包；POST产生两个TCP数据包。**
   - 对于GET方式的请求，浏览器会把http header和data一并发送出去，服务器响应200（返回数据）；
   - 对于POST，浏览器先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok（返回数据）。
